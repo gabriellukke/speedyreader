@@ -1,53 +1,56 @@
 import { createWorker } from 'tesseract.js';
 
 export interface OCRProgress {
-	status: string;
-	progress: number;
+  status: string;
+  progress: number;
 }
 
 export interface Language {
-	code: string;
-	name: string;
-	flag: string;
+  code: string;
+  name: string;
+  flag: string;
 }
 
 export const SUPPORTED_LANGUAGES: Language[] = [
-	{ code: 'eng', name: 'English', flag: '' },
-	{ code: 'por', name: 'Portuguese', flag: '' },
-	{ code: 'spa', name: 'Spanish', flag: '' },
-	{ code: 'fra', name: 'French', flag: '' },
-	{ code: 'deu', name: 'German', flag: '' },
-	{ code: 'ita', name: 'Italian', flag: '' },
-	{ code: 'jpn', name: 'Japanese', flag: '' },
-	{ code: 'kor', name: 'Korean', flag: '' },
-	{ code: 'chi_sim', name: 'Chinese (Simplified)', flag: '' },
-	{ code: 'rus', name: 'Russian', flag: '' }
+  { code: 'eng', name: 'English', flag: '' },
+  { code: 'por', name: 'Portuguese', flag: '' },
+  { code: 'spa', name: 'Spanish', flag: '' },
+  { code: 'fra', name: 'French', flag: '' },
+  { code: 'deu', name: 'German', flag: '' },
+  { code: 'ita', name: 'Italian', flag: '' },
+  { code: 'jpn', name: 'Japanese', flag: '' },
+  { code: 'kor', name: 'Korean', flag: '' },
+  { code: 'chi_sim', name: 'Chinese (Simplified)', flag: '' },
+  { code: 'rus', name: 'Russian', flag: '' }
 ];
 
 export async function extractTextFromImage(
-	imageFile: File,
-	language: string = 'eng',
-	onProgress?: (progress: OCRProgress) => void
+  imageFile: File,
+  language: string = 'eng',
+  onProgress?: (progress: OCRProgress) => void
 ): Promise<string> {
-	const worker = await createWorker(language, undefined, {
-		logger: (m) => {
-			if (onProgress && m.status) {
-				onProgress({
-					status: m.status,
-					progress: m.progress || 0
-				});
-			}
-		}
-	});
+  const worker = await createWorker(language, undefined, {
+    langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/traineddata',
+    workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js',
+    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract-core.wasm.js',
+    logger: (m) => {
+      if (onProgress && m.status) {
+        onProgress({
+          status: m.status,
+          progress: m.progress || 0
+        });
+      }
+    }
+  });
 
-	try {
-		const {
-			data: { text }
-		} = await worker.recognize(imageFile);
-		await worker.terminate();
-		return text.trim();
-	} catch (error) {
-		await worker.terminate();
-		throw error;
-	}
+  try {
+    const {
+      data: { text }
+    } = await worker.recognize(imageFile);
+    await worker.terminate();
+    return text.trim();
+  } catch (error) {
+    await worker.terminate();
+    throw error;
+  }
 }

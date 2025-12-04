@@ -1,117 +1,90 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import SpeedControls from './SpeedControls.svelte';
+  import { onMount, onDestroy } from 'svelte';
+  import SpeedControls from './SpeedControls.svelte';
+  import { createReaderService } from '$lib/services/readerService';
+  import type { ReaderState } from '$lib/services/readerService';
 
-	interface Props {
-		text: string;
-		initialWpm?: number;
-	}
+  interface Props {
+    text: string;
+    initialWpm?: number;
+  }
 
-	let { text, initialWpm = 300 }: Props = $props();
+  let { text, initialWpm = 300 }: Props = $props();
 
-	let words = $state<string[]>([]);
-	let currentIndex = $state(0);
-	let wpm = $state(initialWpm);
-	let isPlaying = $state(false);
-	let intervalId: number | null = null;
+  // Reader service instance
+  const reader = createReaderService();
 
-	// Split text into words
-	$effect(() => {
-		if (text) {
-			words = text.trim().split(/\s+/).filter(word => word.length > 0);
-		}
-	});
+  // Local state synced with service
+  let currentWord = $state('');
+  let currentIndex = $state(0);
+  let totalWords = $state(0);
+  let wpm = $state(initialWpm);
+  let isPlaying = $state(false);
 
-	const play = () => {
-		if (currentIndex >= words.length) {
-			currentIndex = 0;
-		}
-		isPlaying = true;
-		startInterval();
-	};
+  // Initialize reader when text changes
+  $effect(() => {
+    if (text) {
+      reader.initialize(text, {
+        initialWpm,
+        onStateChange: (state: ReaderState) => {
+          currentWord = state.words[state.currentIndex] || '';
+          currentIndex = state.currentIndex;
+          totalWords = state.totalWords;
+          wpm = state.wpm;
+          isPlaying = state.isPlaying;
+        }
+      });
+    }
+  });
 
-	const pause = () => {
-		isPlaying = false;
-		stopInterval();
-	};
+  const togglePlayPause = () => {
+    reader.togglePlayPause();
+  };
 
-	const togglePlayPause = () => {
-		if (isPlaying) {
-			pause();
-		} else {
-			play();
-		}
-	};
+  const nextWord = () => {
+    reader.nextWord();
+  };
 
-	const nextWord = () => {
-		if (currentIndex < words.length - 1) {
-			currentIndex++;
-		}
-	};
+  const prevWord = () => {
+    reader.previousWord();
+  };
 
-	const prevWord = () => {
-		if (currentIndex > 0) {
-			currentIndex--;
-		}
-	};
+  const restart = () => {
+    reader.restart();
+  };
 
-	const restart = () => {
-		currentIndex = 0;
-		pause();
-	};
+  const handleWpmChange = (newWpm: number) => {
+    reader.setWpm(newWpm);
+  };
 
-	const handleWpmChange = (newWpm: number) => {
-		wpm = newWpm;
-		if (isPlaying) {
-			stopInterval();
-			startInterval();
-		}
-	};
-
-	const startInterval = () => {
-		const interval = 60000 / wpm;
-		intervalId = window.setInterval(() => {
-			if (currentIndex < words.length - 1) {
-				currentIndex++;
-			} else {
-				pause();
-			}
-		}, interval);
-	};
-
-	const stopInterval = () => {
-		if (intervalId !== null) {
-			clearInterval(intervalId);
-			intervalId = null;
-		}
-	};
-
-	onDestroy(() => {
-		stopInterval();
-	});
+  onDestroy(() => {
+    reader.destroy();
+  });
 </script>
 
 <div class="flex flex-col items-center justify-center w-full h-full min-h-[60vh] px-4">
-	<!-- Word Display -->
-	<div class="mb-8 md:mb-12 text-center">
-		<div class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight min-h-[80px] md:min-h-[120px] flex items-center justify-center">
-			{words[currentIndex] || ''}
-		</div>
-	</div>
+  <!-- Word Display -->
+  <div class="mb-8 md:mb-12 text-center">
+    <div
+      class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight min-h-[80px] md:min-h-[120px] flex items-center justify-center"
+    >
+      {currentWord}
+    </div>
+  </div>
 
-	<!-- Progress -->
-	<div class="mb-6 text-sm md:text-base text-gray-600 dark:text-gray-400">
-		Word {currentIndex + 1} of {words.length}
-	</div>
+  <!-- Progress -->
+  <div class="mb-6 text-sm md:text-base text-gray-600 dark:text-gray-400">
+    Word {currentIndex + 1} of {totalWords}
+  </div>
 
-	<!-- Controls -->
-	<SpeedControls
-		{wpm}
-		{isPlaying}
-		onPlayPause={togglePlayPause}
-		onPrev={prevWord}
-		onNext={nextWord}
-		onRestart={restart}
-		onWpmChange={handleWpmChange}
-	/>
+  <!-- Controls -->
+  <SpeedControls
+    {wpm}
+    {isPlaying}
+    onPlayPause={togglePlayPause}
+    onPrev={prevWord}
+    onNext={nextWord}
+    onRestart={restart}
+    onWpmChange={handleWpmChange}
+  />
 </div>
