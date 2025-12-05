@@ -5,16 +5,15 @@
   import { libraryStore } from '$lib/stores/libraryStore';
   import { SUPPORTED_LANGUAGES } from '$lib/utils/ocrUtils';
   import ImageCropper from '$lib/components/ImageCropper.svelte';
-  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   import { ocrService } from '$lib/services/ocrService';
   import { textService } from '$lib/services/textService';
   import { storageService } from '$lib/services/storageService';
   import type { OCRProgress } from '$lib/services/ocrService';
   import { t } from '$lib/i18n';
+  import { toastStore } from '$lib/stores/toastStore';
 
   let title = $state('');
   let content = $state('');
-  let showSuccess = $state(false);
   let isProcessingOCR = $state(false);
   let ocrProgress = $state<OCRProgress | null>(null);
   let fileInput: HTMLInputElement;
@@ -25,7 +24,6 @@
   let selectedLanguage = $state('eng');
   let appendOCRText = $state(false);
 
-  // Load saved language preference
   onMount(async () => {
     const savedLanguage = await storageService.getRaw('ocrLanguage');
     if (savedLanguage) {
@@ -34,7 +32,6 @@
     }
   });
 
-  // Save language preference when it changes
   $effect(() => {
     if (selectedLanguage) {
       storageService.setRaw('ocrLanguage', selectedLanguage);
@@ -45,7 +42,7 @@
   const handleReadNow = () => {
     const validation = textService.validateText(content);
     if (!validation.isValid) {
-      alert(validation.error || $t('home.emptyText'));
+      toastStore.show(validation.error || $t('home.emptyText'), 'error');
       return;
     }
     readerStore.setCurrentText(title || 'Untitled', content);
@@ -55,17 +52,14 @@
   const handleSaveToLibrary = () => {
     const validation = textService.validateText(content);
     if (!validation.isValid) {
-      alert(validation.error || $t('home.emptyText'));
+      toastStore.show(validation.error || $t('home.emptyText'), 'error');
       return;
     }
     libraryStore.addItem({
       title: title || 'Untitled',
       content: content
     });
-    showSuccess = true;
-    setTimeout(() => {
-      showSuccess = false;
-    }, 3000);
+    toastStore.show($t('reader.textSaved'), 'success');
     title = '';
     content = '';
   };
@@ -81,7 +75,6 @@
 
       if (result.success && result.text) {
         const extractedText = result.text;
-        // Replace or append based on user preference
         if (appendOCRText && content) {
           content = content + '\n\n' + extractedText;
         } else {
@@ -91,11 +84,11 @@
           title = 'Image Text';
         }
       } else {
-        alert(result.error || $t('errors.noTextFound'));
+        toastStore.show(result.error || $t('errors.noTextFound'), 'error');
       }
     } catch (error) {
       console.error('OCR Error:', error);
-      alert($t('errors.ocrFailed'));
+      toastStore.show($t('errors.ocrFailed'), 'error');
     } finally {
       isProcessingOCR = false;
       ocrProgress = null;
@@ -105,30 +98,25 @@
   const handleImageUpload = (event: Event) => {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    console.log('handleImageUpload called', { file, hasFile: !!file });
     if (file) {
-      console.log('File details:', { name: file.name, type: file.type, size: file.size });
       if (!file.type.startsWith('image/')) {
-        alert($t('errors.invalidImage'));
+        toastStore.show($t('errors.invalidImage'), 'error');
         input.value = '';
         return;
       }
       pendingImageFile = file;
       showCropper = true;
-      console.log('Set showCropper to true');
     }
     input.value = '';
   };
 
   const handleCropComplete = async (croppedFile: File) => {
-    console.log('Crop complete, processing OCR...');
     showCropper = false;
     pendingImageFile = null;
     await processOCR(croppedFile);
   };
 
   const handleCropCancel = () => {
-    console.log('Crop cancelled');
     showCropper = false;
     pendingImageFile = null;
   };
@@ -142,80 +130,68 @@
   };
 </script>
 
-<div
-  class="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800"
->
-  <div class="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
-    <!-- Header -->
-    <div class="text-center mb-8 md:mb-12">
-      <div class="flex justify-end mb-4">
-        <LanguageSwitcher />
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+  <div class="text-center mb-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      {$t('home.title')}
+    </h1>
+    <p class="text-gray-600 dark:text-gray-400">
+      {$t('home.subtitle')}
+    </p>
+  </div>
+
+  <div class="space-y-6">
+    <!-- Text Input Section -->
+    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
+      <div class="space-y-4">
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            {$t('home.titleLabel')}
+          </label>
+          <input
+            id="title"
+            type="text"
+            bind:value={title}
+            placeholder={$t('home.titlePlaceholder')}
+            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:border-transparent text-sm"
+          />
+        </div>
+
+        <div>
+          <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            {$t('home.contentLabel')}
+          </label>
+          <textarea
+            id="content"
+            bind:value={content}
+            placeholder={$t('home.inputPlaceholder')}
+            rows="8"
+            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:border-transparent resize-none text-sm"
+            disabled={isProcessingOCR}
+          ></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button
+            onclick={handleReadNow}
+            class="flex-1 px-4 py-2.5 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+          >
+            {$t('home.startReading')}
+          </button>
+          <button
+            onclick={handleSaveToLibrary}
+            class="px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            {$t('reader.saveToLibrary')}
+          </button>
+        </div>
       </div>
-      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
-        {$t('home.title')}
-      </h1>
-      <p class="text-base md:text-lg text-gray-600 dark:text-gray-300">
-        {$t('home.subtitle')}
-      </p>
     </div>
 
-    <!-- Navigation -->
-    <div class="flex gap-3 mb-6 md:mb-8 justify-center">
-      <a
-        href="/library"
-        class="px-4 py-2 md:px-6 md:py-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium shadow-md text-sm md:text-base"
-      >
-        {$t('nav.library')}
-      </a>
-    </div>
+    <!-- OCR Section -->
+    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
+      <h3 class="font-medium text-gray-900 dark:text-white mb-4">{$t('home.ocrSection')}</h3>
 
-    <!-- Success Message -->
-    {#if showSuccess}
-      <div
-        class="mb-6 p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg text-center font-medium"
-      >
-        {$t('reader.textSaved')}
-      </div>
-    {/if}
-
-    <!-- Main Content -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8">
-      <!-- Title Input -->
-      <div class="mb-6">
-        <label
-          for="title"
-          class="block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          {$t('home.titleLabel')}
-        </label>
-        <input
-          id="title"
-          type="text"
-          bind:value={title}
-          placeholder={$t('home.titlePlaceholder')}
-          class="w-full px-4 py-3 md:py-3.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base md:text-lg"
-        />
-      </div>
-
-      <!-- Content Textarea -->
-      <div class="mb-6">
-        <label
-          for="content"
-          class="block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-2"
-        >
-          {$t('home.contentLabel')}
-        </label>
-        <textarea
-          id="content"
-          bind:value={content}
-          placeholder={$t('home.inputPlaceholder')}
-          rows="12"
-          class="w-full px-4 py-3 md:py-3.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base md:text-lg"
-          disabled={isProcessingOCR}
-        ></textarea>
-      </div>
-
-      <!-- Hidden File Inputs -->
       <input
         type="file"
         accept="image/*"
@@ -232,136 +208,88 @@
         class="hidden"
       />
 
-      <!-- OCR Buttons -->
-      <div class="mb-6">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-          <span class="text-sm text-gray-500 dark:text-gray-400">{$t('home.ocrSection')}</span>
-          <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-        </div>
-
-        <!-- Language Selector -->
-        <div class="mb-3">
-          <label
-            for="language"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            {$t('home.ocrLanguage')}
-          </label>
-          <select
-            id="language"
-            bind:value={selectedLanguage}
-            disabled={isProcessingOCR}
-            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {#each SUPPORTED_LANGUAGES as lang}
-              <option value={lang.code}>
-                {lang.name}
-              </option>
-            {/each}
-          </select>
-        </div>
-
-        <!-- Append Option -->
-        <div class="mb-3">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              bind:checked={appendOCRText}
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="language" class="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">
+              {$t('home.ocrLanguage')}
+            </label>
+            <select
+              id="language"
+              bind:value={selectedLanguage}
               disabled={isProcessingOCR}
-              class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <span class="text-sm text-gray-700 dark:text-gray-300">
+              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm disabled:opacity-50"
+            >
+              {#each SUPPORTED_LANGUAGES as lang}
+                <option value={lang.code}>{lang.name}</option>
+              {/each}
+            </select>
+          </div>
+
+          <div class="flex items-end pb-0.5">
+            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-gray-400">
+              <input
+                type="checkbox"
+                bind:checked={appendOCRText}
+                disabled={isProcessingOCR}
+                class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-gray-900 dark:focus:ring-white"
+              />
               {$t('home.appendText')}
-            </span>
-          </label>
+            </label>
+          </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-3">
+        <div class="flex gap-3">
           <button
             onclick={openCamera}
             disabled={isProcessingOCR}
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium transition-colors text-sm md:text-base"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-              />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             {$t('home.takePhoto')}
           </button>
           <button
             onclick={openFileSelector}
             disabled={isProcessingOCR}
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium transition-colors text-sm md:text-base"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
             {$t('home.uploadImage')}
           </button>
         </div>
-      </div>
 
-      <!-- OCR Progress -->
-      {#if isProcessingOCR && ocrProgress}
-        <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-medium text-blue-900 dark:text-blue-200">
-              {ocrProgress.status === 'recognizing text' ? $t('home.extracting') : $t('home.loadingOCR')}
-            </span>
-            <span class="text-sm font-bold text-blue-900 dark:text-blue-200">
-              {Math.round(ocrProgress.progress * 100)}%
-            </span>
+        {#if isProcessingOCR && ocrProgress}
+          <div class="pt-2">
+            <div class="flex items-center justify-between mb-1.5 text-sm">
+              <span class="text-gray-600 dark:text-gray-400">
+                {ocrProgress.status === 'recognizing text' ? $t('home.extracting') : $t('home.loadingOCR')}
+              </span>
+              <span class="font-medium text-gray-900 dark:text-white">
+                {Math.round(ocrProgress.progress * 100)}%
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div
+                class="bg-gray-900 dark:bg-white h-1.5 rounded-full transition-all duration-300"
+                style="width: {ocrProgress.progress * 100}%"
+              ></div>
+            </div>
           </div>
-          <div class="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-            <div
-              class="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
-              style="width: {ocrProgress.progress * 100}%"
-            ></div>
-          </div>
-        </div>
-      {/if}
-
-      <!-- Action Buttons -->
-      <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
-        <button
-          onclick={handleReadNow}
-          class="flex-1 px-6 py-3.5 md:py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
-        >
-          {$t('home.startReading')}
-        </button>
-        <button
-          onclick={handleSaveToLibrary}
-          class="flex-1 px-6 py-3.5 md:py-4 rounded-lg bg-gray-600 hover:bg-gray-700 text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
-        >
-          {$t('reader.saveToLibrary')}
-        </button>
+        {/if}
       </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-      <p>{$t('home.footer')}</p>
     </div>
   </div>
+
+  <p class="text-center text-xs text-gray-500 dark:text-gray-500 mt-8">
+    {$t('home.footer')}
+  </p>
 </div>
 
-<!-- Image Cropper Modal -->
 {#if showCropper && pendingImageFile}
   <ImageCropper
     imageFile={pendingImageFile}

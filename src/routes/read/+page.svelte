@@ -13,7 +13,6 @@
       currentText = state.currentText;
       currentTitle = state.currentTitle;
 
-      // Redirect if no text
       if (!state.currentText) {
         goto('/');
       }
@@ -23,25 +22,42 @@
   });
 </script>
 
-<div class="min-h-screen bg-white dark:bg-gray-900">
-  <div class="container mx-auto px-4 py-6 md:py-8">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6 md:mb-8">
-      <a
-        href="/"
-        class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium transition-colors text-sm md:text-base"
-      >
-        {$t('reader.back')}
-      </a>
-      <h2 class="text-lg md:text-xl font-semibold text-gray-900 dark:text-white truncate ml-4">
-        {currentTitle}
-      </h2>
-      <div class="w-20 md:w-24"></div>
+<div class="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white flex flex-col">
+  <!-- Minimal Header for Reader -->
+  <header class="flex-shrink-0 border-b border-gray-100 dark:border-gray-800">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <div class="flex items-center justify-between h-14">
+        <a
+          href="/"
+          class="flex items-center gap-2 px-3 py-1.5 -ml-3 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          {$t('reader.back')}
+        </a>
+        
+        <h1 class="absolute left-1/2 -translate-x-1/2 text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 truncate max-w-[200px] md:max-w-md">
+          {currentTitle}
+        </h1>
+        
+        <a
+          href="/library"
+          class="flex items-center gap-2 px-3 py-1.5 -mr-3 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
+          <span class="text-sm font-medium hidden sm:inline">{$t('nav.library')}</span>
+        </a>
+      </div>
     </div>
+  </header>
 
-    <!-- Reader -->
+  <!-- Reader Content - Takes remaining space -->
+  <main class="flex-1 flex flex-col">
     {#if currentText}
       <RSVPReader text={currentText} initialWpm={300} />
     {/if}
-  </div>
+  </main>
 </div>
