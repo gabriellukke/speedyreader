@@ -10,9 +10,9 @@
   <div class="container mx-auto px-4 max-w-4xl">
     <div class="flex items-center justify-between h-14">
       <a href="/" class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-gray-900 dark:bg-white flex items-center justify-center">
-          <svg class="w-4 h-4 text-white dark:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+          <svg class="w-4 h-4 text-orange-300" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
         <span class="font-semibold text-gray-900 dark:text-white hidden sm:block">
