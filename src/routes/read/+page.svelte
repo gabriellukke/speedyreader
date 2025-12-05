@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { readerStore } from '$lib/stores/readerStore';
   import RSVPReader from '$lib/components/RSVPReader.svelte';
+  import { t } from '$lib/i18n';
 
   let currentText = $state('');
   let currentTitle = $state('');
@@ -30,7 +31,7 @@
         href="/"
         class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium transition-colors text-sm md:text-base"
       >
-        ← Back
+        {$t('reader.back')}
       </a>
       <h2 class="text-lg md:text-xl font-semibold text-gray-900 dark:text-white truncate ml-4">
         {currentTitle}

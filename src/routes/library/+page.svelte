@@ -5,6 +5,7 @@
   import { readerStore } from '$lib/stores/readerStore';
   import { dateService } from '$lib/services/dateService';
   import type { LibraryItem } from '$lib/types';
+  import { t } from '$lib/i18n';
 
   let items = $state<LibraryItem[]>([]);
 
@@ -23,7 +24,7 @@
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this item?')) {
+    if (confirm($t('library.deleteConfirm'))) {
       libraryStore.deleteItem(id);
     }
   };
@@ -39,12 +40,12 @@
   <div class="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8 md:mb-12">
-      <h1 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">Library</h1>
+      <h1 class="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">{$t('library.title')}</h1>
       <a
         href="/"
         class="px-4 py-2 md:px-6 md:py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors shadow-md text-sm md:text-base"
       >
-        + Add New
+        {$t('home.addNew')}
       </a>
     </div>
 
@@ -67,16 +68,16 @@
           </svg>
         </div>
         <h3 class="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-          Your library is empty
+          {$t('library.empty')}
         </h3>
         <p class="text-gray-600 dark:text-gray-400 mb-6">
-          Save texts from the home page to access them later
+          {$t('library.emptyDescription')}
         </p>
         <a
           href="/"
           class="inline-block px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
         >
-          Go to Home
+          {$t('library.goHome')}
         </a>
       </div>
     {:else}
@@ -104,7 +105,7 @@
                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                       />
                     </svg>
-                    {item.wordCount} words
+                    {item.wordCount} {$t('library.words')}
                   </span>
                   <span class="flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,13 +125,13 @@
                   onclick={() => handleRead(item)}
                   class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-sm md:text-base"
                 >
-                  Read
+                  {$t('library.read')}
                 </button>
                 <button
                   onclick={() => handleDelete(item.id)}
                   class="px-4 py-2 md:px-5 md:py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-colors text-sm md:text-base"
                 >
-                  Delete
+                  {$t('library.delete')}
                 </button>
               </div>
             </div>

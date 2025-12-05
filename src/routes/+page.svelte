@@ -5,10 +5,12 @@
   import { libraryStore } from '$lib/stores/libraryStore';
   import { SUPPORTED_LANGUAGES } from '$lib/utils/ocrUtils';
   import ImageCropper from '$lib/components/ImageCropper.svelte';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
   import { ocrService } from '$lib/services/ocrService';
   import { textService } from '$lib/services/textService';
   import { storageService } from '$lib/services/storageService';
   import type { OCRProgress } from '$lib/services/ocrService';
+  import { t } from '$lib/i18n';
 
   let title = $state('');
   let content = $state('');
@@ -43,7 +45,7 @@
   const handleReadNow = () => {
     const validation = textService.validateText(content);
     if (!validation.isValid) {
-      alert(validation.error || 'Please paste some text first');
+      alert(validation.error || $t('home.emptyText'));
       return;
     }
     readerStore.setCurrentText(title || 'Untitled', content);
@@ -53,7 +55,7 @@
   const handleSaveToLibrary = () => {
     const validation = textService.validateText(content);
     if (!validation.isValid) {
-      alert(validation.error || 'Please paste some text first');
+      alert(validation.error || $t('home.emptyText'));
       return;
     }
     libraryStore.addItem({
@@ -89,11 +91,11 @@
           title = 'Image Text';
         }
       } else {
-        alert(result.error || 'No text found in the image');
+        alert(result.error || $t('errors.noTextFound'));
       }
     } catch (error) {
       console.error('OCR Error:', error);
-      alert('Failed to extract text from image. Please try again.');
+      alert($t('errors.ocrFailed'));
     } finally {
       isProcessingOCR = false;
       ocrProgress = null;
@@ -107,7 +109,7 @@
     if (file) {
       console.log('File details:', { name: file.name, type: file.type, size: file.size });
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        alert($t('errors.invalidImage'));
         input.value = '';
         return;
       }
@@ -146,11 +148,14 @@
   <div class="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
     <!-- Header -->
     <div class="text-center mb-8 md:mb-12">
+      <div class="flex justify-end mb-4">
+        <LanguageSwitcher />
+      </div>
       <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-3 md:mb-4">
-        SpeedyReader
+        {$t('home.title')}
       </h1>
       <p class="text-base md:text-lg text-gray-600 dark:text-gray-300">
-        Read faster with RSVP technology
+        {$t('home.subtitle')}
       </p>
     </div>
 
@@ -160,7 +165,7 @@
         href="/library"
         class="px-4 py-2 md:px-6 md:py-3 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium shadow-md text-sm md:text-base"
       >
-        Library
+        {$t('nav.library')}
       </a>
     </div>
 
@@ -169,7 +174,7 @@
       <div
         class="mb-6 p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg text-center font-medium"
       >
-        Saved to library successfully!
+        {$t('reader.textSaved')}
       </div>
     {/if}
 
@@ -181,13 +186,13 @@
           for="title"
           class="block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-2"
         >
-          Title (optional)
+          {$t('home.titleLabel')}
         </label>
         <input
           id="title"
           type="text"
           bind:value={title}
-          placeholder="Enter a title for your text"
+          placeholder={$t('home.titlePlaceholder')}
           class="w-full px-4 py-3 md:py-3.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base md:text-lg"
         />
       </div>
@@ -198,12 +203,12 @@
           for="content"
           class="block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-2"
         >
-          Paste your text
+          {$t('home.contentLabel')}
         </label>
         <textarea
           id="content"
           bind:value={content}
-          placeholder="Paste the text you want to read..."
+          placeholder={$t('home.inputPlaceholder')}
           rows="12"
           class="w-full px-4 py-3 md:py-3.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base md:text-lg"
           disabled={isProcessingOCR}
@@ -231,7 +236,7 @@
       <div class="mb-6">
         <div class="flex items-center gap-2 mb-3">
           <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-          <span class="text-sm text-gray-500 dark:text-gray-400">Or extract from image</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">{$t('home.ocrSection')}</span>
           <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
         </div>
 
@@ -241,7 +246,7 @@
             for="language"
             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           >
-            OCR Language
+            {$t('home.ocrLanguage')}
           </label>
           <select
             id="language"
@@ -267,7 +272,7 @@
               class="w-4 h-4 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <span class="text-sm text-gray-700 dark:text-gray-300">
-              Append to existing text (instead of replacing)
+              {$t('home.appendText')}
             </span>
           </label>
         </div>
@@ -292,7 +297,7 @@
                 d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            Take Photo
+            {$t('home.takePhoto')}
           </button>
           <button
             onclick={openFileSelector}
@@ -307,7 +312,7 @@
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            Upload Image
+            {$t('home.uploadImage')}
           </button>
         </div>
       </div>
@@ -317,7 +322,7 @@
         <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-blue-900 dark:text-blue-200">
-              {ocrProgress.status === 'recognizing text' ? 'Extracting text...' : 'Loading OCR...'}
+              {ocrProgress.status === 'recognizing text' ? $t('home.extracting') : $t('home.loadingOCR')}
             </span>
             <span class="text-sm font-bold text-blue-900 dark:text-blue-200">
               {Math.round(ocrProgress.progress * 100)}%
@@ -338,20 +343,20 @@
           onclick={handleReadNow}
           class="flex-1 px-6 py-3.5 md:py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
         >
-          Read Now
+          {$t('home.startReading')}
         </button>
         <button
           onclick={handleSaveToLibrary}
           class="flex-1 px-6 py-3.5 md:py-4 rounded-lg bg-gray-600 hover:bg-gray-700 text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all"
         >
-          Save to Library
+          {$t('reader.saveToLibrary')}
         </button>
       </div>
     </div>
 
     <!-- Footer -->
     <div class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-      <p>Fast, simple, and private. All data stored locally.</p>
+      <p>{$t('home.footer')}</p>
     </div>
   </div>
 </div>

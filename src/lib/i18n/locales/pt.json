@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "SpeedyReader",
+    "description": "Leia mais rápido com RSVP"
+  },
+  "nav": {
+    "home": "Início",
+    "library": "Biblioteca",
+    "read": "Ler"
+  },
+  "home": {
+    "title": "SpeedyReader",
+    "subtitle": "Leia mais rápido com RSVP (Apresentação Visual Serial Rápida)",
+    "titleLabel": "Título (opcional)",
+    "titlePlaceholder": "Digite um título para o seu texto",
+    "contentLabel": "Cole seu texto",
+    "inputPlaceholder": "Cole o texto que você deseja ler...",
+    "startReading": "Começar a Ler",
+    "ocrSection": "Ou extrair de imagem",
+    "ocrLanguage": "Idioma do OCR",
+    "appendText": "Adicionar ao texto existente (em vez de substituir)",
+    "takePhoto": "Tirar Foto",
+    "uploadImage": "Enviar Imagem",
+    "processing": "Processando...",
+    "extracting": "Extraindo texto...",
+    "loadingOCR": "Carregando OCR...",
+    "cancel": "Cancelar",
+    "emptyText": "Por favor, insira algum texto para ler",
+    "addNew": "+ Adicionar Novo",
+    "footer": "Rápido, simples e privado. Todos os dados armazenados localmente."
+  },
+  "library": {
+    "title": "Biblioteca",
+    "empty": "Sua biblioteca está vazia",
+    "emptyDescription": "Salve textos da página inicial para acessá-los mais tarde",
+    "goHome": "Ir para o Início",
+    "saved": "Salvo",
+    "words": "palavras",
+    "deleteConfirm": "Tem certeza de que deseja excluir este item?",
+    "read": "Ler",
+    "delete": "Excluir"
+  },
+  "reader": {
+    "wpm": "PPM",
+    "play": "Reproduzir",
+    "pause": "Pausar",
+    "restart": "Reiniciar",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "progress": "Progresso",
+    "saveToLibrary": "Salvar na Biblioteca",
+    "back": "← Voltar",
+    "backToHome": "Voltar ao Início",
+    "noText": "Nenhum texto para ler",
+    "goHome": "Ir para o Início",
+    "textSaved": "Texto salvo na biblioteca!"
+  },
+  "imageCropper": {
+    "title": "Selecione a área do texto",
+    "instructions": "Clique e arraste para selecionar a área contendo texto",
+    "crop": "Extrair Texto",
+    "cancel": "Cancelar"
+  },
+  "languages": {
+    "eng": "Inglês",
+    "por": "Português",
+    "spa": "Espanhol",
+    "fra": "Francês",
+    "deu": "Alemão",
+    "ita": "Italiano",
+    "jpn": "Japonês",
+    "chi_sim": "Chinês (Simplificado)",
+    "chi_tra": "Chinês (Tradicional)",
+    "rus": "Russo",
+    "ara": "Árabe",
+    "hin": "Hindi"
+  },
+  "errors": {
+    "ocrFailed": "Falha ao extrair texto da imagem. Por favor, tente novamente.",
+    "imageLoadFailed": "Falha ao carregar imagem",
+    "invalidImage": "Por favor, selecione um arquivo de imagem",
+    "emptySelection": "Por favor, selecione uma área para recortar",
+    "noTextFound": "Nenhum texto encontrado na imagem"
+  }
+}

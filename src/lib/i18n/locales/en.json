@@ -1,0 +1,85 @@
+{
+  "app": {
+    "title": "SpeedyReader",
+    "description": "Read faster with RSVP"
+  },
+  "nav": {
+    "home": "Home",
+    "library": "Library",
+    "read": "Read"
+  },
+  "home": {
+    "title": "SpeedyReader",
+    "subtitle": "Read faster with RSVP (Rapid Serial Visual Presentation)",
+    "titleLabel": "Title (optional)",
+    "titlePlaceholder": "Enter a title for your text",
+    "contentLabel": "Paste your text",
+    "inputPlaceholder": "Paste the text you want to read...",
+    "startReading": "Start Reading",
+    "ocrSection": "Or extract from image",
+    "ocrLanguage": "OCR Language",
+    "appendText": "Append to existing text (instead of replacing)",
+    "takePhoto": "Take Photo",
+    "uploadImage": "Upload Image",
+    "processing": "Processing...",
+    "extracting": "Extracting text...",
+    "loadingOCR": "Loading OCR...",
+    "cancel": "Cancel",
+    "emptyText": "Please enter some text to read",
+    "addNew": "+ Add New",
+    "footer": "Fast, simple, and private. All data stored locally."
+  },
+  "library": {
+    "title": "Library",
+    "empty": "Your library is empty",
+    "emptyDescription": "Save texts from the home page to access them later",
+    "goHome": "Go to Home",
+    "saved": "Saved",
+    "words": "words",
+    "deleteConfirm": "Are you sure you want to delete this item?",
+    "read": "Read",
+    "delete": "Delete"
+  },
+  "reader": {
+    "wpm": "WPM",
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Restart",
+    "previous": "Previous",
+    "next": "Next",
+    "progress": "Progress",
+    "saveToLibrary": "Save to Library",
+    "back": "← Back",
+    "backToHome": "Back to Home",
+    "noText": "No text to read",
+    "goHome": "Go to Home",
+    "textSaved": "Text saved to library!"
+  },
+  "imageCropper": {
+    "title": "Select text area",
+    "instructions": "Click and drag to select the area containing text",
+    "crop": "Extract Text",
+    "cancel": "Cancel"
+  },
+  "languages": {
+    "eng": "English",
+    "por": "Portuguese",
+    "spa": "Spanish",
+    "fra": "French",
+    "deu": "German",
+    "ita": "Italian",
+    "jpn": "Japanese",
+    "chi_sim": "Chinese (Simplified)",
+    "chi_tra": "Chinese (Traditional)",
+    "rus": "Russian",
+    "ara": "Arabic",
+    "hin": "Hindi"
+  },
+  "errors": {
+    "ocrFailed": "Failed to extract text from image. Please try again.",
+    "imageLoadFailed": "Failed to load image",
+    "invalidImage": "Please select an image file",
+    "emptySelection": "Please select an area to crop",
+    "noTextFound": "No text found in the image"
+  }
+}
