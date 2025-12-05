@@ -1,4 +1,4 @@
-import { createWorker } from 'tesseract.js';
+import Tesseract from 'tesseract.js';
 
 export interface OCRProgress {
   status: string;
@@ -29,10 +29,7 @@ export async function extractTextFromImage(
   language: string = 'eng',
   onProgress?: (progress: OCRProgress) => void
 ): Promise<string> {
-  const worker = await createWorker(language, undefined, {
-    langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/traineddata',
-    workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/worker.min.js',
-    corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract-core.wasm.js',
+  const result = await Tesseract.recognize(imageFile, language, {
     logger: (m) => {
       if (onProgress && m.status) {
         onProgress({
@@ -43,14 +40,5 @@ export async function extractTextFromImage(
     }
   });
 
-  try {
-    const {
-      data: { text }
-    } = await worker.recognize(imageFile);
-    await worker.terminate();
-    return text.trim();
-  } catch (error) {
-    await worker.terminate();
-    throw error;
-  }
+  return result.data.text.trim();
 }
