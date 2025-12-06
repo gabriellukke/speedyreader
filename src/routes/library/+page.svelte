@@ -34,33 +34,34 @@
   };
 </script>
 
-<div class="container mx-auto px-4 py-8 max-w-2xl">
+<div class="min-h-screen container mx-auto px-4 py-8 max-w-2xl">
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-2xl font-bold text-foreground">
         {$t('library.title')}
       </h1>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+      <p class="text-sm text-muted-foreground mt-0.5">
         {items.length}
         {items.length === 1 ? 'item' : 'items'}
       </p>
     </div>
     <a
       href="/"
-      class="px-4 py-2 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors cursor-pointer"
+      class="px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors cursor-pointer"
     >
       {$t('home.addNew')}
     </a>
   </div>
 
   {#if items.length === 0}
-    <div
-      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-12 text-center"
-    >
-      <div
-        class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 mb-4"
-      >
-        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-card text-card-foreground rounded-lg border border-border p-12 text-center">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted mb-4">
+        <svg
+          class="w-6 h-6 text-muted-foreground"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -69,15 +70,15 @@
           />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">
+      <h3 class="text-lg font-medium text-foreground mb-1">
         {$t('library.empty')}
       </h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+      <p class="text-sm text-muted-foreground mb-6">
         {$t('library.emptyDescription')}
       </p>
       <a
         href="/"
-        class="inline-block px-4 py-2 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors cursor-pointer"
+        class="inline-block px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors cursor-pointer"
       >
         {$t('library.goHome')}
       </a>
@@ -86,14 +87,14 @@
     <div class="space-y-3">
       {#each items as item (item.id)}
         <div
-          class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 hover:border-gray-300 dark:hover:border-gray-700 transition-colors"
+          class="bg-card text-card-foreground rounded-lg border border-border p-4 hover:border-ring transition-colors"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="min-w-0 flex-1">
-              <h3 class="font-medium text-gray-900 dark:text-white truncate">
+              <h3 class="font-medium text-foreground truncate">
                 {item.title}
               </h3>
-              <div class="flex gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <div class="flex gap-3 text-xs text-muted-foreground mt-1">
                 <span>{item.wordCount} {$t('library.words')}</span>
                 <span>{formatDate(item.createdAt)}</span>
               </div>
@@ -101,13 +102,13 @@
             <div class="flex gap-2">
               <button
                 onclick={() => handleRead(item)}
-                class="px-3 py-1.5 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors cursor-pointer"
+                class="px-3 py-1.5 rounded-md bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors cursor-pointer"
               >
                 {$t('library.read')}
               </button>
               <button
                 onclick={() => handleDelete(item.id)}
-                class="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                class="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
                 aria-label={$t('library.delete')}
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -44,12 +44,12 @@
 <div bind:this={containerEl} class="reader-page">
   <!-- Header - Hidden in fullscreen -->
   {#if !isFullscreen}
-    <header class="reader-header">
+    <header class="shrink-0 border-b border-border">
       <div class="container mx-auto px-4 max-w-5xl">
         <div class="flex items-center justify-between h-14">
           <a
             href="/"
-            class="reader-link flex items-center gap-2 px-3 py-1.5 -ml-3 rounded-md transition-colors text-sm font-medium cursor-pointer"
+            class="flex items-center gap-2 px-3 py-1.5 -ml-3 rounded-md transition-colors text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground hover:bg-accent"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -63,14 +63,14 @@
           </a>
 
           <h1
-            class="reader-title absolute left-1/2 -translate-x-1/2 text-sm md:text-base font-medium truncate max-w-[200px] md:max-w-md"
+            class="absolute left-1/2 -translate-x-1/2 text-sm md:text-base font-medium truncate max-w-[200px] md:max-w-md text-muted-foreground"
           >
             {currentTitle}
           </h1>
 
           <a
             href="/library"
-            class="reader-link flex items-center gap-2 px-3 py-1.5 -mr-3 rounded-md transition-colors cursor-pointer"
+            class="flex items-center gap-2 px-3 py-1.5 -mr-3 rounded-md transition-colors cursor-pointer text-muted-foreground hover:text-foreground hover:bg-accent"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -88,7 +88,7 @@
   {/if}
 
   <!-- Reader Content -->
-  <main class="flex-1">
+  <main class="reader-main">
     {#if currentText}
       <RSVPReader
         text={currentText}
@@ -105,25 +105,25 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--color-reader-bg);
-    color: var(--color-reader-text);
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
-  .reader-header {
-    flex-shrink: 0;
-    border-bottom: 1px solid var(--color-border);
+  .reader-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
   }
 
-  .reader-title {
-    color: var(--color-text-secondary);
+  /* Fullscreen specific styles */
+  .reader-page:fullscreen,
+  .reader-page:-webkit-full-screen {
+    background-color: var(--background);
   }
 
-  .reader-link {
-    color: var(--color-text-secondary);
-  }
-
-  .reader-link:hover {
-    color: var(--color-text-primary);
-    background-color: var(--color-btn-secondary-hover-bg);
+  .reader-page:fullscreen .reader-main,
+  .reader-page:-webkit-full-screen .reader-main {
+    background-color: var(--background);
   }
 </style>

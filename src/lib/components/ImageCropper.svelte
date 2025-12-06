@@ -28,27 +28,15 @@
   let objectURL = '';
   let canvasDimensions = $state<ImageDimensions>({ width: 0, height: 0 });
 
-  // Load image when canvas ref changes
   $effect(() => {
-    console.log('Effect triggered', {
-      hasCanvas: !!canvasElement,
-      imageLoaded,
-      loadError,
-      hasObjectURL: !!objectURL
-    });
     if (canvasElement && !imageLoaded && !loadError && !objectURL) {
-      console.log('Canvas available, loading image...');
       loadImage();
     }
   });
 
   onMount(() => {
-    console.log('ImageCropper mounted', { hasCanvas: !!canvasElement, imageFile: imageFile.name });
-
-    // Cleanup
     return () => {
       if (objectURL) {
-        console.log('Cleaning up object URL');
         imageService.revokeObjectURL(objectURL);
       }
     };
@@ -56,10 +44,7 @@
 
   const loadImage = async () => {
     try {
-      console.log('Starting image load...', imageFile.name, imageFile.type, imageFile.size);
-
       if (!canvasElement) {
-        console.error('Canvas not available');
         loadError = true;
         return;
       }
@@ -67,26 +52,19 @@
       ctx = canvasElement.getContext('2d');
 
       if (!ctx) {
-        console.error('Failed to get canvas context');
         loadError = true;
         return;
       }
 
-      console.log('Canvas context obtained');
-
-      // Use image service to load image
       const result = await imageService.loadImage(imageFile);
 
       if (!result.success || !result.image || !result.dimensions) {
-        console.error('Failed to load image');
         loadError = true;
         return;
       }
 
       img = result.image;
-      console.log('Image loaded successfully:', img.width, 'x', img.height);
 
-      // Scale image to fit canvas while maintaining aspect ratio
       const maxWidth = 800;
       const maxHeight = 600;
       const scaledDimensions = imageService.calculateScaledDimensions(
@@ -95,14 +73,12 @@
         maxHeight
       );
 
-      console.log('Canvas size:', scaledDimensions.width, 'x', scaledDimensions.height);
       canvasElement.width = scaledDimensions.width;
       canvasElement.height = scaledDimensions.height;
       canvasDimensions = scaledDimensions;
 
       drawImage();
       imageLoaded = true;
-      console.log('Image rendering complete');
     } catch (error) {
       console.error('Error in loadImage:', error);
       loadError = true;
@@ -154,7 +130,6 @@
     }
   };
 
-  // Touch support
   const handleTouchStart = (e: TouchEvent) => {
     if (!canvasElement) return;
     e.preventDefault();
@@ -191,7 +166,6 @@
   const handleExtractText = async () => {
     if (!hasSelection || !ctx || !canvasElement) return;
 
-    // Use image service to crop the image
     const result = await imageService.cropImage(img, selectionRect, canvasDimensions);
 
     if (result.success && result.file) {
@@ -212,23 +186,21 @@
   };
 </script>
 
-<div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+<div class="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
   <div
-    class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto"
+    class="bg-card text-card-foreground rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto"
   >
     <div class="p-4 md:p-6">
-      <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        Select Text Area
-      </h3>
-      <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-1">
+      <h3 class="text-xl md:text-2xl font-bold text-foreground mb-2">Select Text Area</h3>
+      <p class="text-sm md:text-base text-muted-foreground mb-1">
         Click and drag to select the text you want to extract
       </p>
-      <p class="text-xs md:text-sm text-blue-600 dark:text-blue-400 mb-4">
+      <p class="text-xs md:text-sm text-primary mb-4">
         Tip: Selecting a specific area greatly improves accuracy
       </p>
 
       <div
-        class="mb-4 flex justify-center bg-gray-100 dark:bg-gray-700 rounded-lg p-4 overflow-auto min-h-[300px] items-center"
+        class="mb-4 flex justify-center bg-muted rounded-lg p-4 overflow-auto min-h-[300px] items-center"
       >
         <canvas
           bind:this={canvasElement}
@@ -246,7 +218,7 @@
         {#if loadError}
           <div class="text-center py-12">
             <svg
-              class="w-16 h-16 text-red-500 mx-auto mb-4"
+              class="w-16 h-16 text-destructive mx-auto mb-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -258,15 +230,11 @@
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <p class="text-base font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Failed to load image
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Please try a different image
-            </p>
+            <p class="text-base font-medium text-foreground mb-2">Failed to load image</p>
+            <p class="text-sm text-muted-foreground mb-4">Please try a different image</p>
             <button
               onclick={onCancel}
-              class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white font-medium transition-colors"
+              class="px-4 py-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 font-medium transition-colors cursor-pointer"
             >
               Close
             </button>
@@ -275,11 +243,11 @@
           <div class="text-center py-12">
             <div class="relative inline-flex">
               <div
-                class="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600"
+                class="animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary"
               ></div>
               <div class="absolute inset-0 flex items-center justify-center">
                 <svg
-                  class="w-8 h-8 text-blue-600"
+                  class="w-8 h-8 text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -293,12 +261,8 @@
                 </svg>
               </div>
             </div>
-            <p class="mt-6 text-base font-medium text-gray-700 dark:text-gray-300">
-              Preparing image...
-            </p>
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              This should only take a moment
-            </p>
+            <p class="mt-6 text-base font-medium text-foreground">Preparing image...</p>
+            <p class="mt-2 text-sm text-muted-foreground">This should only take a moment</p>
           </div>
         {/if}
       </div>
@@ -307,20 +271,20 @@
         <button
           onclick={handleSelectAll}
           disabled={!imageLoaded}
-          class="px-4 py-2.5 rounded-lg bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-colors text-sm md:text-base"
+          class="px-4 py-2.5 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-sm md:text-base cursor-pointer"
         >
           Select All
         </button>
         <button
           onclick={handleExtractText}
           disabled={!hasSelection}
-          class="flex-1 px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold transition-colors text-sm md:text-base"
+          class="flex-1 px-6 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-colors text-sm md:text-base cursor-pointer"
         >
           Extract Text from Selection
         </button>
         <button
           onclick={onCancel}
-          class="px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-colors text-sm md:text-base"
+          class="px-6 py-2.5 rounded-lg bg-destructive text-white hover:bg-destructive/90 font-medium transition-colors text-sm md:text-base cursor-pointer"
         >
           Cancel
         </button>

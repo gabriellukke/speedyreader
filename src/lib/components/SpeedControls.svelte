@@ -149,9 +149,14 @@
     border-radius: 9999px;
     transition: all 150ms;
     cursor: pointer;
-    color: var(--color-reader-controls-text);
     background: transparent;
     border: none;
+    color: var(--muted-foreground);
+  }
+
+  .control-btn:hover {
+    color: var(--foreground);
+    background-color: var(--accent);
   }
 
   @media (min-width: 640px) {
@@ -160,20 +165,19 @@
     }
   }
 
-  .control-btn:hover {
-    color: var(--color-reader-controls-hover);
-    background-color: var(--color-btn-secondary-hover-bg);
-  }
-
   .play-btn {
     padding: 0.75rem;
     margin: 0 0.25rem;
     border-radius: 9999px;
     transition: all 150ms;
     cursor: pointer;
-    background-color: var(--color-btn-primary-bg);
-    color: var(--color-btn-primary-text);
     border: none;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .play-btn:hover {
+    opacity: 0.9;
   }
 
   @media (min-width: 640px) {
@@ -181,10 +185,6 @@
       padding: 1rem;
       margin: 0 0.5rem;
     }
-  }
-
-  .play-btn:hover {
-    background-color: var(--color-btn-primary-hover);
   }
 
   .speed-slider {
@@ -206,9 +206,14 @@
     border-radius: 0.25rem;
     transition: all 150ms;
     cursor: pointer;
-    color: var(--color-reader-controls-text);
     background: transparent;
     border: none;
+    color: var(--muted-foreground);
+  }
+
+  .speed-btn:hover {
+    color: var(--foreground);
+    background-color: var(--accent);
   }
 
   @media (min-width: 640px) {
@@ -217,18 +222,13 @@
     }
   }
 
-  .speed-btn:hover {
-    color: var(--color-reader-controls-hover);
-    background-color: var(--color-btn-secondary-hover-bg);
-  }
-
   .slider {
     flex: 1;
     height: 4px;
     border-radius: 9999px;
     appearance: none;
     cursor: pointer;
-    background-color: var(--color-reader-progress-bg);
+    background-color: var(--muted);
   }
 
   .slider::-webkit-slider-thumb {
@@ -236,7 +236,7 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: var(--color-accent);
+    background: var(--primary);
     cursor: pointer;
   }
 
@@ -244,7 +244,7 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: var(--color-accent);
+    background: var(--primary);
     cursor: pointer;
     border: none;
   }

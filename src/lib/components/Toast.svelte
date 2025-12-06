@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toastStore, type Toast } from '$lib/stores/toastStore';
-  import { fade, fly } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
 
   let toasts = $state<Toast[]>([]);
 
@@ -24,13 +24,13 @@
   function getColors(type: Toast['type']) {
     switch (type) {
       case 'success':
-        return 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200';
+        return 'bg-green-500/10 border-green-500/30 text-green-500';
       case 'error':
-        return 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
+        return 'bg-red-500/10 border-red-500/30 text-red-500';
       case 'warning':
-        return 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200';
+        return 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500';
       case 'info':
-        return 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
+        return 'bg-blue-500/10 border-blue-500/30 text-blue-500';
     }
   }
 </script>
@@ -42,18 +42,14 @@
       class="pointer-events-auto rounded-lg border shadow-lg p-4 {getColors(toast.type)}"
     >
       <div class="flex items-start gap-3">
-        <svg
-          class="w-5 h-5 flex-shrink-0 mt-0.5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {@html getIcon(toast.type)}
         </svg>
         <p class="flex-1 text-sm font-medium">{toast.message}</p>
         <button
           onclick={() => toastStore.dismiss(toast.id)}
-          class="flex-shrink-0 hover:opacity-70 transition-opacity"
+          class="shrink-0 hover:opacity-70 transition-opacity cursor-pointer"
+          aria-label="Dismiss"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

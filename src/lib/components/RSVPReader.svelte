@@ -181,12 +181,14 @@
     width: 100%;
     height: 100%;
     min-height: calc(100vh - 4rem);
+    flex: 1;
     overflow: hidden;
-    background-color: var(--color-reader-bg);
+    background-color: var(--background);
   }
 
   .reader-fullscreen {
     min-height: 100vh;
+    background-color: var(--background);
   }
 
   .progress-bar {
@@ -196,33 +198,29 @@
     right: 0;
     height: 4px;
     z-index: 10;
-    background-color: var(--color-reader-progress-bg);
+    overflow: hidden;
+    background-color: var(--muted);
   }
 
   .progress-fill {
     height: 100%;
     transition: width 150ms ease-out;
-    background-color: var(--color-reader-progress-fill);
+    will-change: width;
+    background-color: var(--foreground);
   }
 
   .progress-animated {
-    background: repeating-linear-gradient(
-      -45deg,
-      var(--color-accent),
-      var(--color-accent) 10px,
-      var(--color-accent-hover) 10px,
-      var(--color-accent-hover) 20px
-    );
+    background: linear-gradient(90deg, var(--primary) 0%, var(--ring) 50%, var(--primary) 100%);
     background-size: 200% 100%;
-    animation: progress-stripe 0.5s linear infinite;
+    animation: progress-shimmer 1s ease-in-out infinite;
   }
 
-  @keyframes progress-stripe {
+  @keyframes progress-shimmer {
     0% {
-      background-position: 0 0;
+      background-position: 200% 0;
     }
     100% {
-      background-position: 28px 0;
+      background-position: -200% 0;
     }
   }
 
@@ -235,14 +233,14 @@
     border-radius: 9999px;
     transition: all 150ms;
     cursor: pointer;
-    color: var(--color-reader-controls-text);
     background: transparent;
     border: none;
+    color: var(--muted-foreground);
   }
 
   .toggle-btn:hover {
-    color: var(--color-reader-controls-hover);
-    background-color: var(--color-btn-secondary-hover-bg);
+    color: var(--foreground);
+    background-color: var(--accent);
   }
 
   .word-container {
@@ -260,7 +258,7 @@
     text-align: center;
     user-select: none;
     padding: 0 1rem;
-    color: var(--color-reader-text);
+    color: var(--foreground);
   }
 
   @media (min-width: 640px) {
@@ -323,7 +321,7 @@
 
   .progress-text {
     font-size: 0.75rem;
-    color: var(--color-reader-controls-text);
+    color: var(--muted-foreground);
   }
 
   @media (min-width: 640px) {

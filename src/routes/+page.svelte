@@ -130,27 +130,22 @@
   };
 </script>
 
-<div class="container mx-auto px-4 py-8 max-w-2xl">
+<div class="min-h-screen container mx-auto px-4 py-8 max-w-2xl">
   <div class="text-center mb-8">
-    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    <h1 class="text-2xl md:text-3xl font-bold text-foreground mb-2">
       {$t('home.title')}
     </h1>
-    <p class="text-gray-600 dark:text-gray-400">
+    <p class="text-muted-foreground">
       {$t('home.subtitle')}
     </p>
   </div>
 
   <div class="space-y-6">
     <!-- Text Input Section -->
-    <div
-      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5"
-    >
+    <div class="bg-card text-card-foreground rounded-lg border border-border p-5">
       <div class="space-y-4">
         <div>
-          <label
-            for="title"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
-          >
+          <label for="title" class="block text-sm font-medium text-foreground mb-1.5">
             {$t('home.titleLabel')}
           </label>
           <input
@@ -158,15 +153,12 @@
             type="text"
             bind:value={title}
             placeholder={$t('home.titlePlaceholder')}
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:border-transparent text-sm"
+            class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
           />
         </div>
 
         <div>
-          <label
-            for="content"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
-          >
+          <label for="content" class="block text-sm font-medium text-foreground mb-1.5">
             {$t('home.contentLabel')}
           </label>
           <textarea
@@ -174,7 +166,7 @@
             bind:value={content}
             placeholder={$t('home.inputPlaceholder')}
             rows="8"
-            class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-white focus:border-transparent resize-none text-sm"
+            class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent resize-none text-sm"
             disabled={isProcessingOCR}
           ></textarea>
         </div>
@@ -182,13 +174,13 @@
         <div class="flex gap-3 pt-2">
           <button
             onclick={handleReadNow}
-            class="flex-1 px-4 py-2.5 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors cursor-pointer"
+            class="flex-1 px-4 py-2.5 rounded-md bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors cursor-pointer"
           >
             {$t('home.startReading')}
           </button>
           <button
             onclick={handleSaveToLibrary}
-            class="px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+            class="px-4 py-2.5 rounded-md border border-border bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/80 transition-colors cursor-pointer"
           >
             {$t('reader.saveToLibrary')}
           </button>
@@ -197,10 +189,8 @@
     </div>
 
     <!-- OCR Section -->
-    <div
-      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5"
-    >
-      <h3 class="font-medium text-gray-900 dark:text-white mb-4">{$t('home.ocrSection')}</h3>
+    <div class="bg-card text-card-foreground rounded-lg border border-border p-5">
+      <h3 class="font-medium text-foreground mb-4">{$t('home.ocrSection')}</h3>
 
       <input
         type="file"
@@ -221,14 +211,14 @@
       <div class="space-y-4">
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label for="language" class="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">
+            <label for="language" class="block text-sm text-muted-foreground mb-1.5">
               {$t('home.ocrLanguage')}
             </label>
             <select
               id="language"
               bind:value={selectedLanguage}
               disabled={isProcessingOCR}
-              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm cursor-pointer disabled:opacity-50"
+              class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm cursor-pointer disabled:opacity-50"
             >
               {#each SUPPORTED_LANGUAGES as lang}
                 <option value={lang.code}>{lang.name}</option>
@@ -237,14 +227,12 @@
           </div>
 
           <div class="flex items-end pb-0.5">
-            <label
-              class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-gray-400"
-            >
+            <label class="flex items-center gap-2 cursor-pointer text-sm text-muted-foreground">
               <input
                 type="checkbox"
                 bind:checked={appendOCRText}
                 disabled={isProcessingOCR}
-                class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-gray-900 dark:focus:ring-white"
+                class="w-4 h-4 rounded border-input text-primary focus:ring-ring"
               />
               {$t('home.appendText')}
             </label>
@@ -255,7 +243,7 @@
           <button
             onclick={openCamera}
             disabled={isProcessingOCR}
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-border bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/80 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -276,7 +264,7 @@
           <button
             onclick={openFileSelector}
             disabled={isProcessingOCR}
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-border bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/80 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -293,18 +281,18 @@
         {#if isProcessingOCR && ocrProgress}
           <div class="pt-2">
             <div class="flex items-center justify-between mb-1.5 text-sm">
-              <span class="text-gray-600 dark:text-gray-400">
+              <span class="text-muted-foreground">
                 {ocrProgress.status === 'recognizing text'
                   ? $t('home.extracting')
                   : $t('home.loadingOCR')}
               </span>
-              <span class="font-medium text-gray-900 dark:text-white">
+              <span class="font-medium text-foreground">
                 {Math.round(ocrProgress.progress * 100)}%
               </span>
             </div>
-            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+            <div class="w-full bg-muted rounded-full h-1.5">
               <div
-                class="bg-gray-900 dark:bg-white h-1.5 rounded-full transition-all duration-300"
+                class="bg-primary h-1.5 rounded-full transition-all duration-300"
                 style="width: {ocrProgress.progress * 100}%"
               ></div>
             </div>
@@ -314,7 +302,7 @@
     </div>
   </div>
 
-  <p class="text-center text-xs text-gray-500 dark:text-gray-500 mt-8">
+  <p class="text-center text-xs text-muted-foreground mt-8">
     {$t('home.footer')}
   </p>
 </div>

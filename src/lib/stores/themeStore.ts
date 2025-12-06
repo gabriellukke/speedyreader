@@ -1,55 +1,80 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
 
-export type Theme = 'dark' | 'light' | 'sepia';
+export type ThemePreference = 'system' | 'light' | 'dark';
+type ResolvedTheme = 'light' | 'dark';
 
 const STORAGE_KEY = 'speedyreader-theme';
-const DEFAULT_THEME: Theme = 'dark';
 
-function getInitialTheme(): Theme {
-  if (!browser) return DEFAULT_THEME;
+function getSystemTheme(): ResolvedTheme {
+  if (!browser) return 'dark';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
 
+function getStoredPreference(): ThemePreference {
+  if (!browser) return 'system';
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored && isValidTheme(stored)) {
+  if (stored === 'light' || stored === 'dark' || stored === 'system') {
     return stored;
   }
-
-  return DEFAULT_THEME;
+  return 'system';
 }
 
-function isValidTheme(value: string): value is Theme {
-  return ['dark', 'light', 'sepia'].includes(value);
+function resolveTheme(preference: ThemePreference): ResolvedTheme {
+  if (preference === 'system') {
+    return getSystemTheme();
+  }
+  return preference;
 }
 
-function applyTheme(theme: Theme) {
+function applyTheme(theme: ResolvedTheme) {
   if (!browser) return;
-
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem(STORAGE_KEY, theme);
+  if (theme === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
 }
 
 function createThemeStore() {
-  const { subscribe, set, update } = writable<Theme>(getInitialTheme());
+  const preference = writable<ThemePreference>('system');
+  const resolved = writable<ResolvedTheme>('dark');
 
   return {
-    subscribe,
-    set: (theme: Theme) => {
-      applyTheme(theme);
-      set(theme);
+    preference: { subscribe: preference.subscribe },
+    resolved: { subscribe: resolved.subscribe },
+
+    init() {
+      if (!browser) return;
+
+      const storedPref = getStoredPreference();
+      preference.set(storedPref);
+
+      const resolvedTheme = resolveTheme(storedPref);
+      resolved.set(resolvedTheme);
+      applyTheme(resolvedTheme);
+
+      // Listen for system theme changes
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = () => {
+        const currentPref = get(preference);
+        if (currentPref === 'system') {
+          const newResolved = getSystemTheme();
+          resolved.set(newResolved);
+          applyTheme(newResolved);
+        }
+      };
+      mediaQuery.addEventListener('change', handleChange);
     },
-    toggle: () => {
-      update((current) => {
-        const themes: Theme[] = ['dark', 'light', 'sepia'];
-        const nextIndex = (themes.indexOf(current) + 1) % themes.length;
-        const next = themes[nextIndex];
-        applyTheme(next);
-        return next;
-      });
-    },
-    init: () => {
-      const theme = getInitialTheme();
-      applyTheme(theme);
-      set(theme);
+
+    setPreference(pref: ThemePreference) {
+      if (!browser) return;
+      preference.set(pref);
+      localStorage.setItem(STORAGE_KEY, pref);
+
+      const resolvedTheme = resolveTheme(pref);
+      resolved.set(resolvedTheme);
+      applyTheme(resolvedTheme);
     }
   };
 }

@@ -20,11 +20,9 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="min-h-screen" style="background-color: var(--color-bg-app);">
-  {#if !isReaderPage}
-    <TopNav />
-  {/if}
-  {@render children()}
-</div>
+{#if !isReaderPage}
+  <TopNav />
+{/if}
+{@render children()}
 
 <Toast />
