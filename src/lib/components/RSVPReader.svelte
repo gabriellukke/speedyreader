@@ -22,7 +22,7 @@
   let isPlaying = $state(false);
   let showControls = $state(true);
 
-  let progress = $derived(totalWords > 0 ? ((currentIndex + 1) / totalWords) * 100 : 0);
+  let progress = $derived(totalWords > 1 ? (currentIndex / (totalWords - 1)) * 100 : 0);
 
   let remainingTime = $derived(() => {
     const remainingWords = totalWords - currentIndex - 1;
@@ -83,6 +83,15 @@
     reader.setWpm(newWpm);
   };
 
+  const handleProgressClick = (e: MouseEvent | TouchEvent) => {
+    const bar = e.currentTarget as HTMLElement;
+    const rect = bar.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const targetIndex = Math.floor(percent * totalWords);
+    reader.jumpToWord(targetIndex);
+  };
+
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
       return;
@@ -130,7 +139,20 @@
 
 <div class="reader-container {isFullscreen ? 'reader-fullscreen' : ''}">
   <!-- Progress Bar - Top -->
-  <div class="progress-bar">
+  <div
+    class="progress-bar"
+    onclick={handleProgressClick}
+    ontouchstart={handleProgressClick}
+    onkeydown={(e) => {
+      if (e.key === 'ArrowLeft') prevWord();
+      if (e.key === 'ArrowRight') nextWord();
+    }}
+    role="slider"
+    aria-valuenow={currentIndex}
+    aria-valuemin={0}
+    aria-valuemax={totalWords}
+    tabindex="0"
+  >
     <div
       class="progress-fill {isPlaying ? 'progress-animated' : ''}"
       style="width: {progress}%;"
@@ -224,6 +246,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    user-select: none;
   }
 
   .progress-fill {
@@ -265,6 +289,7 @@
     color: var(--foreground);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     letter-spacing: 0.025em;
+    pointer-events: none;
   }
 
   .toggle-btn {
