@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { IconMaximize, IconMinimize } from './icons';
+
   interface Props {
     wpm: number;
     isPlaying: boolean;
@@ -11,66 +13,57 @@
     onToggleFullscreen?: () => void;
   }
 
-  let { wpm, isPlaying, isFullscreen = false, onPlayPause, onPrev, onNext, onRestart, onWpmChange, onToggleFullscreen }: Props = $props();
-
-  const btnClass = isFullscreen
-    ? 'text-white/70 hover:text-white hover:bg-white/10'
-    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800';
-
-  const playBtnClass = isFullscreen
-    ? 'bg-white text-black hover:bg-gray-200'
-    : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-200';
+  let {
+    wpm,
+    isPlaying,
+    isFullscreen = false,
+    onPlayPause,
+    onPrev,
+    onNext,
+    onRestart,
+    onWpmChange,
+    onToggleFullscreen
+  }: Props = $props();
 </script>
 
-<div class="flex flex-col items-center gap-4">
+<div class="controls-wrapper">
   <!-- Playback Controls -->
-  <div class="flex items-center gap-1">
-    <button
-      onclick={onRestart}
-      class="p-3 rounded-full transition-colors {btnClass}"
-      aria-label="Restart (R)"
-      title="Restart (R)"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+  <div class="playback-controls">
+    <button onclick={onRestart} class="control-btn" aria-label="Restart (R)" title="Restart (R)">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+        />
       </svg>
     </button>
 
-    <button
-      onclick={onPrev}
-      class="p-3 rounded-full transition-colors {btnClass}"
-      aria-label="Previous (←)"
-      title="Previous (←)"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <button onclick={onPrev} class="control-btn" aria-label="Previous (←)" title="Previous (←)">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
       </svg>
     </button>
 
     <button
       onclick={onPlayPause}
-      class="p-4 mx-2 rounded-full transition-colors {playBtnClass}"
+      class="play-btn"
       aria-label={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
       title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
     >
       {#if isPlaying}
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="icon-lg" fill="currentColor" viewBox="0 0 24 24">
           <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
         </svg>
       {:else}
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="icon-lg" fill="currentColor" viewBox="0 0 24 24">
           <path d="M8 5v14l11-7z" />
         </svg>
       {/if}
     </button>
 
-    <button
-      onclick={onNext}
-      class="p-3 rounded-full transition-colors {btnClass}"
-      aria-label="Next (→)"
-      title="Next (→)"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <button onclick={onNext} class="control-btn" aria-label="Next (→)" title="Next (→)">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
       </svg>
     </button>
@@ -78,35 +71,31 @@
     {#if onToggleFullscreen}
       <button
         onclick={onToggleFullscreen}
-        class="p-3 rounded-full transition-colors {btnClass}"
+        class="control-btn"
         aria-label={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
         title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
       >
         {#if isFullscreen}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
-          </svg>
+          <IconMinimize class="icon" />
         {:else}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-          </svg>
+          <IconMaximize class="icon" />
         {/if}
       </button>
     {/if}
   </div>
 
   <!-- Speed Slider -->
-  <div class="flex items-center gap-3 w-64">
+  <div class="speed-slider">
     <button
       onclick={() => onWpmChange(Math.max(100, wpm - 50))}
-      class="p-1.5 rounded transition-colors {btnClass}"
+      class="speed-btn"
       aria-label="Decrease speed"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
       </svg>
     </button>
-    
+
     <input
       type="range"
       min="100"
@@ -114,15 +103,15 @@
       step="50"
       value={wpm}
       oninput={(e) => onWpmChange(Number((e.target as HTMLInputElement).value))}
-      class="flex-1 h-1 rounded-full appearance-none cursor-pointer slider {isFullscreen ? 'bg-white/20' : 'bg-gray-300 dark:bg-gray-600'}"
+      class="slider"
     />
-    
+
     <button
       onclick={() => onWpmChange(Math.min(1000, wpm + 50))}
-      class="p-1.5 rounded transition-colors {btnClass}"
+      class="speed-btn"
       aria-label="Increase speed"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
     </button>
@@ -130,12 +119,124 @@
 </div>
 
 <style>
+  .controls-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .controls-wrapper {
+      gap: 1rem;
+    }
+  }
+
+  .playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+  }
+
+  @media (min-width: 640px) {
+    .playback-controls {
+      gap: 0.25rem;
+    }
+  }
+
+  .control-btn {
+    padding: 0.625rem;
+    border-radius: 9999px;
+    transition: all 150ms;
+    cursor: pointer;
+    color: var(--color-reader-controls-text);
+    background: transparent;
+    border: none;
+  }
+
+  @media (min-width: 640px) {
+    .control-btn {
+      padding: 0.75rem;
+    }
+  }
+
+  .control-btn:hover {
+    color: var(--color-reader-controls-hover);
+    background-color: var(--color-btn-secondary-hover-bg);
+  }
+
+  .play-btn {
+    padding: 0.75rem;
+    margin: 0 0.25rem;
+    border-radius: 9999px;
+    transition: all 150ms;
+    cursor: pointer;
+    background-color: var(--color-btn-primary-bg);
+    color: var(--color-btn-primary-text);
+    border: none;
+  }
+
+  @media (min-width: 640px) {
+    .play-btn {
+      padding: 1rem;
+      margin: 0 0.5rem;
+    }
+  }
+
+  .play-btn:hover {
+    background-color: var(--color-btn-primary-hover);
+  }
+
+  .speed-slider {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 12rem;
+  }
+
+  @media (min-width: 640px) {
+    .speed-slider {
+      gap: 0.75rem;
+      width: 16rem;
+    }
+  }
+
+  .speed-btn {
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 150ms;
+    cursor: pointer;
+    color: var(--color-reader-controls-text);
+    background: transparent;
+    border: none;
+  }
+
+  @media (min-width: 640px) {
+    .speed-btn {
+      padding: 0.375rem;
+    }
+  }
+
+  .speed-btn:hover {
+    color: var(--color-reader-controls-hover);
+    background-color: var(--color-btn-secondary-hover-bg);
+  }
+
+  .slider {
+    flex: 1;
+    height: 4px;
+    border-radius: 9999px;
+    appearance: none;
+    cursor: pointer;
+    background-color: var(--color-reader-progress-bg);
+  }
+
   .slider::-webkit-slider-thumb {
     appearance: none;
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #f97316;
+    background: var(--color-accent);
     cursor: pointer;
   }
 
@@ -143,8 +244,44 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #f97316;
+    background: var(--color-accent);
     cursor: pointer;
     border: none;
+  }
+
+  .icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .icon-lg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .icon-lg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  .icon-sm {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  @media (min-width: 640px) {
+    .icon-sm {
+      width: 1rem;
+      height: 1rem;
+    }
   }
 </style>

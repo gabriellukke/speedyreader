@@ -142,10 +142,15 @@
 
   <div class="space-y-6">
     <!-- Text Input Section -->
-    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
+    <div
+      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5"
+    >
       <div class="space-y-4">
         <div>
-          <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          <label
+            for="title"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+          >
             {$t('home.titleLabel')}
           </label>
           <input
@@ -158,7 +163,10 @@
         </div>
 
         <div>
-          <label for="content" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+          <label
+            for="content"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+          >
             {$t('home.contentLabel')}
           </label>
           <textarea
@@ -174,13 +182,13 @@
         <div class="flex gap-3 pt-2">
           <button
             onclick={handleReadNow}
-            class="flex-1 px-4 py-2.5 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+            class="flex-1 px-4 py-2.5 rounded-md bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors cursor-pointer"
           >
             {$t('home.startReading')}
           </button>
           <button
             onclick={handleSaveToLibrary}
-            class="px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            class="px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
           >
             {$t('reader.saveToLibrary')}
           </button>
@@ -189,7 +197,9 @@
     </div>
 
     <!-- OCR Section -->
-    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
+    <div
+      class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5"
+    >
       <h3 class="font-medium text-gray-900 dark:text-white mb-4">{$t('home.ocrSection')}</h3>
 
       <input
@@ -218,7 +228,7 @@
               id="language"
               bind:value={selectedLanguage}
               disabled={isProcessingOCR}
-              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm disabled:opacity-50"
+              class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm cursor-pointer disabled:opacity-50"
             >
               {#each SUPPORTED_LANGUAGES as lang}
                 <option value={lang.code}>{lang.name}</option>
@@ -227,7 +237,9 @@
           </div>
 
           <div class="flex items-end pb-0.5">
-            <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-gray-400">
+            <label
+              class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-gray-400"
+            >
               <input
                 type="checkbox"
                 bind:checked={appendOCRText}
@@ -243,21 +255,36 @@
           <button
             onclick={openCamera}
             disabled={isProcessingOCR}
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
             {$t('home.takePhoto')}
           </button>
           <button
             onclick={openFileSelector}
             disabled={isProcessingOCR}
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+              />
             </svg>
             {$t('home.uploadImage')}
           </button>
@@ -267,7 +294,9 @@
           <div class="pt-2">
             <div class="flex items-center justify-between mb-1.5 text-sm">
               <span class="text-gray-600 dark:text-gray-400">
-                {ocrProgress.status === 'recognizing text' ? $t('home.extracting') : $t('home.loadingOCR')}
+                {ocrProgress.status === 'recognizing text'
+                  ? $t('home.extracting')
+                  : $t('home.loadingOCR')}
               </span>
               <span class="font-medium text-gray-900 dark:text-white">
                 {Math.round(ocrProgress.progress * 100)}%
