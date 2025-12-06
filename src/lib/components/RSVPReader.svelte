@@ -24,6 +24,26 @@
 
   let progress = $derived(totalWords > 0 ? ((currentIndex + 1) / totalWords) * 100 : 0);
 
+  let remainingTime = $derived(() => {
+    const remainingWords = totalWords - currentIndex - 1;
+    if (remainingWords <= 0 || wpm <= 0) return '';
+
+    const totalSeconds = Math.ceil((remainingWords / wpm) * 60);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+
+    const fmt = (n: number, unit: string) => `${n} ${unit}${n !== 1 ? 's' : ''}`;
+    const parts = [
+      h > 0 && fmt(h, 'hour'),
+      m > 0 && fmt(m, 'minute'),
+      (s > 0 || (!h && !m)) && fmt(s, 'second')
+    ].filter(Boolean) as string[];
+
+    const last = parts.pop();
+    return `~ ${parts.length ? `${parts.join(' ')} and ${last}` : last}`;
+  });
+
   $effect(() => {
     if (text) {
       reader.initialize(text, {
@@ -115,6 +135,7 @@
       class="progress-fill {isPlaying ? 'progress-animated' : ''}"
       style="width: {progress}%;"
     ></div>
+    <span class="progress-time">{remainingTime()}</span>
   </div>
 
   <!-- Toggle Controls Button - Top Right -->
@@ -196,37 +217,59 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 2rem;
     z-index: 10;
     overflow: hidden;
     background-color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     transition: width 150ms ease-out;
-    will-change: width;
-    background-color: var(--foreground);
+    background: linear-gradient(
+      -45deg,
+      var(--ring) 25%,
+      var(--accent) 25%,
+      var(--accent) 50%,
+      var(--ring) 50%,
+      var(--ring) 75%,
+      var(--accent) 75%
+    );
+    background-size: 20px 20px;
   }
 
   .progress-animated {
-    background: linear-gradient(90deg, var(--primary) 0%, var(--ring) 50%, var(--primary) 100%);
-    background-size: 200% 100%;
-    animation: progress-shimmer 1s ease-in-out infinite;
+    animation: progress-stripe 0.5s linear infinite;
   }
 
-  @keyframes progress-shimmer {
-    0% {
-      background-position: 200% 0;
+  @keyframes progress-stripe {
+    from {
+      background-position: 0 0;
     }
-    100% {
-      background-position: -200% 0;
+    to {
+      background-position: 20px 20px;
     }
+  }
+
+  .progress-time {
+    position: relative;
+    z-index: 1;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--foreground);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.025em;
   }
 
   .toggle-btn {
     position: absolute;
-    top: 1rem;
+    top: 2.5rem;
     right: 1rem;
     z-index: 20;
     padding: 0.5rem;
