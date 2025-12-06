@@ -7,17 +7,24 @@
     <meta name="theme-color" content="#111827" />
     <script>
       (function () {
-        const stored = localStorage.getItem('speedyreader-theme');
-        let theme = 'dark';
-        if (stored === 'light') {
-          theme = 'light';
-        } else if (stored === 'dark') {
-          theme = 'dark';
-        } else {
-          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
+        try {
+          const stored = localStorage.getItem('speedyreader-settings');
+          const settings = stored ? JSON.parse(stored) : {};
+          let theme = settings.theme || 'system';
+
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else if (theme === 'sepia') {
+            document.documentElement.classList.add('sepia');
+          }
+        } catch {
+          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+          }
         }
       })();
     </script>

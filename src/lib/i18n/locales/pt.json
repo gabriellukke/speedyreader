@@ -6,7 +6,9 @@
   "nav": {
     "home": "Início",
     "library": "Biblioteca",
-    "read": "Ler"
+    "read": "Ler",
+    "settings": "Configurações",
+    "language": "Idioma"
   },
   "home": {
     "title": "SpeedyReader",
@@ -81,5 +83,24 @@
     "invalidImage": "Por favor, selecione um arquivo de imagem",
     "emptySelection": "Por favor, selecione uma área para recortar",
     "noTextFound": "Nenhum texto encontrado na imagem"
+  },
+  "settings": {
+    "title": "Configurações",
+    "appearance": "Aparência",
+    "theme": "Tema",
+    "themeSystem": "Sistema",
+    "themeLight": "Claro",
+    "themeDark": "Escuro",
+    "themeSepia": "Sépia",
+    "reader": "Leitor",
+    "fontFamily": "Fonte",
+    "fontSystem": "Padrão do Sistema",
+    "fontSerif": "Serifada",
+    "fontMono": "Monoespaçada",
+    "fontSize": "Tamanho da Fonte",
+    "defaultWpm": "Velocidade Padrão (PPM)",
+    "language": "Idioma",
+    "reset": "Restaurar Padrões",
+    "resetConfirm": "Tem certeza de que deseja restaurar todas as configurações?"
   }
 }

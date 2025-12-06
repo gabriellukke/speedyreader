@@ -6,7 +6,9 @@
   "nav": {
     "home": "Home",
     "library": "Library",
-    "read": "Read"
+    "read": "Read",
+    "settings": "Settings",
+    "language": "Language"
   },
   "home": {
     "title": "SpeedyReader",
@@ -81,5 +83,24 @@
     "invalidImage": "Please select an image file",
     "emptySelection": "Please select an area to crop",
     "noTextFound": "No text found in the image"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSepia": "Sepia",
+    "reader": "Reader",
+    "fontFamily": "Font",
+    "fontSystem": "System Default",
+    "fontSerif": "Serif",
+    "fontMono": "Monospace",
+    "fontSize": "Font Size",
+    "defaultWpm": "Default Speed (WPM)",
+    "language": "Language",
+    "reset": "Reset to Defaults",
+    "resetConfirm": "Are you sure you want to reset all settings?"
   }
 }

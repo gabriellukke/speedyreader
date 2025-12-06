@@ -3,6 +3,7 @@
   import SpeedControls from './SpeedControls.svelte';
   import { createReaderService } from '$lib/services/readerService';
   import type { ReaderState } from '$lib/services/readerService';
+  import { settingsStore } from '$lib/stores/settingsStore';
 
   interface Props {
     text: string;
@@ -11,14 +12,35 @@
     onToggleFullscreen?: () => void;
   }
 
-  let { text, initialWpm = 300, isFullscreen = false, onToggleFullscreen }: Props = $props();
+  let { text, initialWpm, isFullscreen = false, onToggleFullscreen }: Props = $props();
 
   const reader = createReaderService();
+
+  let settings = $state($settingsStore);
+
+  $effect(() => {
+    settings = $settingsStore;
+  });
+
+  let effectiveWpm = $derived(initialWpm ?? settings.defaultWpm);
+
+  let fontFamilyClass = $derived(() => {
+    switch (settings.fontFamily) {
+      case 'serif':
+        return 'font-serif';
+      case 'mono':
+        return 'font-mono';
+      default:
+        return 'font-sans';
+    }
+  });
+
+  let fontSizeScale = $derived(settings.fontSize / 100);
 
   let currentWord = $state('');
   let currentIndex = $state(0);
   let totalWords = $state(0);
-  let wpm = $state(initialWpm);
+  let wpm = $state(300);
   let isPlaying = $state(false);
   let showControls = $state(true);
 
@@ -47,7 +69,7 @@
   $effect(() => {
     if (text) {
       reader.initialize(text, {
-        initialWpm,
+        initialWpm: effectiveWpm,
         onStateChange: (state: ReaderState) => {
           currentWord = state.words[state.currentIndex] || '';
           currentIndex = state.currentIndex;
@@ -189,7 +211,7 @@
 
   <!-- Word Display - True Center -->
   <div class="word-container">
-    <div class="word-display">
+    <div class="word-display {fontFamilyClass()}" style="--font-scale: {fontSizeScale};">
       {currentWord}
     </div>
   </div>
@@ -320,7 +342,8 @@
   }
 
   .word-display {
-    font-size: 3rem;
+    --base-size: 3rem;
+    font-size: calc(var(--base-size) * var(--font-scale, 1));
     font-weight: 700;
     letter-spacing: -0.025em;
     text-align: center;
@@ -331,25 +354,25 @@
 
   @media (min-width: 640px) {
     .word-display {
-      font-size: 3.75rem;
+      --base-size: 3.75rem;
     }
   }
 
   @media (min-width: 768px) {
     .word-display {
-      font-size: 4.5rem;
+      --base-size: 4.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .word-display {
-      font-size: 6rem;
+      --base-size: 6rem;
     }
   }
 
   @media (min-width: 1280px) {
     .word-display {
-      font-size: 8rem;
+      --base-size: 8rem;
     }
   }
 

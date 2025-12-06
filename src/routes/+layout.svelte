@@ -5,14 +5,14 @@
   import Toast from '$lib/components/Toast.svelte';
   import TopNav from '$lib/components/TopNav.svelte';
   import { page } from '$app/stores';
-  import { themeStore } from '$lib/stores/themeStore';
+  import { settingsStore } from '$lib/stores/settingsStore';
 
   let { children } = $props();
 
   let isReaderPage = $derived($page.url.pathname === '/read');
 
   onMount(() => {
-    themeStore.init();
+    settingsStore.init();
   });
 </script>
 

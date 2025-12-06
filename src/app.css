@@ -85,6 +85,36 @@
   --ring: #71717a;
 }
 
+/* Sepia Theme */
+.sepia {
+  --background: #f5f0e6;
+  --foreground: #3d3229;
+
+  --card: #faf6ed;
+  --card-foreground: #3d3229;
+
+  --popover: #faf6ed;
+  --popover-foreground: #3d3229;
+
+  --primary: #8b5a2b;
+  --primary-foreground: #faf6ed;
+
+  --secondary: #e8dfd0;
+  --secondary-foreground: #3d3229;
+
+  --muted: #e8dfd0;
+  --muted-foreground: #7a6b5a;
+
+  --accent: #d4c4a8;
+  --accent-foreground: #3d3229;
+
+  --destructive: #c53030;
+
+  --border: #d4c4a8;
+  --input: #e8dfd0;
+  --ring: #8b5a2b;
+}
+
 /*
  * =============================================================================
  * Tailwind Theme Integration
