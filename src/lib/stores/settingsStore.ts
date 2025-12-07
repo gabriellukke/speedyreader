@@ -4,11 +4,19 @@ import { browser } from '$app/environment';
 export type Theme = 'system' | 'light' | 'dark' | 'sepia';
 export type FontFamily = 'system' | 'serif' | 'mono';
 
+export interface PauseSettings {
+  enabled: boolean;
+  duration: number;
+}
+
 export interface Settings {
   theme: Theme;
   fontFamily: FontFamily;
   fontSize: number;
   defaultWpm: number;
+  pauseAfterComma: PauseSettings;
+  pauseAfterPeriod: PauseSettings;
+  pauseAfterParagraph: PauseSettings;
 }
 
 const STORAGE_KEY = 'speedyreader-settings';
@@ -17,7 +25,10 @@ const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   fontFamily: 'system',
   fontSize: 100,
-  defaultWpm: 300
+  defaultWpm: 300,
+  pauseAfterComma: { enabled: true, duration: 250 },
+  pauseAfterPeriod: { enabled: true, duration: 450 },
+  pauseAfterParagraph: { enabled: true, duration: 700 }
 };
 
 function getStoredSettings(): Settings {
@@ -102,6 +113,48 @@ function createSettingsStore() {
     setDefaultWpm(defaultWpm: number) {
       update((s) => {
         const updated = { ...s, defaultWpm: Math.max(100, Math.min(1000, defaultWpm)) };
+        this.save(updated);
+        return updated;
+      });
+    },
+
+    setPauseAfterComma(pause: PauseSettings) {
+      update((s) => {
+        const updated = {
+          ...s,
+          pauseAfterComma: {
+            enabled: pause.enabled,
+            duration: Math.max(0, Math.min(2000, pause.duration))
+          }
+        };
+        this.save(updated);
+        return updated;
+      });
+    },
+
+    setPauseAfterPeriod(pause: PauseSettings) {
+      update((s) => {
+        const updated = {
+          ...s,
+          pauseAfterPeriod: {
+            enabled: pause.enabled,
+            duration: Math.max(0, Math.min(2000, pause.duration))
+          }
+        };
+        this.save(updated);
+        return updated;
+      });
+    },
+
+    setPauseAfterParagraph(pause: PauseSettings) {
+      update((s) => {
+        const updated = {
+          ...s,
+          pauseAfterParagraph: {
+            enabled: pause.enabled,
+            duration: Math.max(0, Math.min(2000, pause.duration))
+          }
+        };
         this.save(updated);
         return updated;
       });

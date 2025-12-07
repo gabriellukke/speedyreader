@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { readerStore } from '$lib/stores/readerStore';
+  import { settingsStore } from '$lib/stores/settingsStore';
   import RSVPReader from '$lib/components/RSVPReader.svelte';
   import { t } from '$lib/i18n';
 
@@ -9,6 +10,11 @@
   let currentTitle = $state('');
   let isFullscreen = $state(false);
   let containerEl: HTMLElement;
+  let settings = $state($settingsStore);
+
+  $effect(() => {
+    settings = $settingsStore;
+  });
 
   onMount(() => {
     const unsubscribe = readerStore.subscribe((state) => {
@@ -92,7 +98,7 @@
     {#if currentText}
       <RSVPReader
         text={currentText}
-        initialWpm={300}
+        initialWpm={settings.defaultWpm}
         {isFullscreen}
         onToggleFullscreen={toggleFullscreen}
       />

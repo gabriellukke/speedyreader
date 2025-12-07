@@ -12,8 +12,15 @@ export interface ReaderState {
   totalWords: number;
 }
 
+export interface PauseSettings {
+  pauseAfterComma: { enabled: boolean; duration: number };
+  pauseAfterPeriod: { enabled: boolean; duration: number };
+  pauseAfterParagraph: { enabled: boolean; duration: number };
+}
+
 export interface ReaderConfig {
   initialWpm?: number;
+  pauseSettings?: PauseSettings;
   onStateChange?: (state: ReaderState) => void;
   onComplete?: () => void;
 }
@@ -24,6 +31,8 @@ class ReaderService {
   private wpm: number = 300;
   private isPlaying: boolean = false;
   private intervalId: number | null = null;
+  private pauseTimeoutId: number | null = null;
+  private pauseSettings?: PauseSettings;
   private onStateChange?: (state: ReaderState) => void;
   private onComplete?: () => void;
 
@@ -33,14 +42,27 @@ class ReaderService {
    * @param config - Optional configuration
    */
   initialize(text: string, config?: ReaderConfig): void {
-    this.words = this.splitTextIntoWords(text);
-    this.currentIndex = 0;
+    const wasPlaying = this.isPlaying;
+    const previousIndex = this.currentIndex;
+    const previousWords = this.words;
+    this.stopInterval();
+
+    const newWords = this.splitTextIntoWords(text);
+    const isSameText = JSON.stringify(newWords) === JSON.stringify(previousWords);
+
+    this.words = newWords;
+    this.currentIndex = isSameText ? previousIndex : 0;
     this.wpm = config?.initialWpm || 300;
     this.isPlaying = false;
+    this.pauseSettings = config?.pauseSettings;
     this.onStateChange = config?.onStateChange;
     this.onComplete = config?.onComplete;
 
     this.notifyStateChange();
+
+    if (wasPlaying && isSameText) {
+      this.play();
+    }
   }
 
   /**
@@ -171,31 +193,124 @@ class ReaderService {
   }
 
   /**
-   * Calculate estimated time remaining
+   * Calculate total estimated time from a starting index including all pauses
+   * @param startIndex - Starting word index
+   * @returns Total time in seconds
+   */
+  getTotalTimeFromIndex(startIndex: number): number {
+    if (startIndex >= this.words.length - 1) return 0;
+
+    const baseSecondsPerWord = 60 / this.wpm;
+    let totalSeconds = 0;
+
+    for (let i = startIndex; i < this.words.length - 1; i++) {
+      const word = this.words[i];
+      const nextWord = this.words[i + 1];
+
+      totalSeconds += baseSecondsPerWord;
+
+      if (this.pauseSettings) {
+        if (word.endsWith(',')) {
+          if (this.pauseSettings.pauseAfterComma.enabled) {
+            totalSeconds += this.pauseSettings.pauseAfterComma.duration / 1000;
+          }
+        }
+
+        if (word.endsWith('.') || word.endsWith('!') || word.endsWith('?')) {
+          if (this.pauseSettings.pauseAfterPeriod.enabled) {
+            totalSeconds += this.pauseSettings.pauseAfterPeriod.duration / 1000;
+          }
+
+          const nextStartsWithCapital = nextWord.length > 0 && /^[A-Z]/.test(nextWord);
+          if (nextStartsWithCapital && this.pauseSettings.pauseAfterParagraph.enabled) {
+            totalSeconds += this.pauseSettings.pauseAfterParagraph.duration / 1000;
+          }
+        }
+      }
+    }
+
+    return totalSeconds;
+  }
+
+  /**
+   * Calculate estimated time remaining including pauses
    * @returns Time remaining in seconds
    */
   getTimeRemaining(): number {
-    const wordsRemaining = this.words.length - this.currentIndex;
-    const secondsPerWord = 60 / this.wpm;
-    return wordsRemaining * secondsPerWord;
+    return this.getTotalTimeFromIndex(this.currentIndex);
+  }
+
+  /**
+   * Get pause duration for current word
+   */
+  private getPauseDuration(word: string): number {
+    if (!this.pauseSettings) return 0;
+
+    let pauseMs = 0;
+
+    if (word.endsWith(',')) {
+      if (this.pauseSettings.pauseAfterComma.enabled) {
+        pauseMs = Math.max(pauseMs, this.pauseSettings.pauseAfterComma.duration);
+      }
+    }
+
+    if (word.endsWith('.') || word.endsWith('!') || word.endsWith('?')) {
+      if (this.pauseSettings.pauseAfterPeriod.enabled) {
+        pauseMs = Math.max(pauseMs, this.pauseSettings.pauseAfterPeriod.duration);
+      }
+    }
+
+    return pauseMs;
+  }
+
+  /**
+   * Check if there's a paragraph break after current word
+   */
+  private isParagraphBreak(currentIndex: number): boolean {
+    if (!this.pauseSettings?.pauseAfterParagraph.enabled) return false;
+    if (currentIndex >= this.words.length - 1) return false;
+
+    const currentWord = this.words[currentIndex];
+    const nextWord = this.words[currentIndex + 1];
+
+    const endsWithSentencePunctuation =
+      currentWord.endsWith('.') || currentWord.endsWith('!') || currentWord.endsWith('?');
+
+    const nextStartsWithCapital = nextWord.length > 0 && /^[A-Z]/.test(nextWord);
+
+    return endsWithSentencePunctuation && nextStartsWithCapital;
   }
 
   /**
    * Start the reading interval
    */
   private startInterval(): void {
-    const intervalMs = 60000 / this.wpm;
-    this.intervalId = window.setInterval(() => {
+    const baseIntervalMs = 60000 / this.wpm;
+    const currentWord = this.words[this.currentIndex];
+    const pauseMs = this.getPauseDuration(currentWord);
+    const isParagraph = this.isParagraphBreak(this.currentIndex);
+    const paragraphPauseMs =
+      isParagraph && this.pauseSettings?.pauseAfterParagraph.enabled
+        ? this.pauseSettings.pauseAfterParagraph.duration
+        : 0;
+
+    const totalDelay = baseIntervalMs + pauseMs + paragraphPauseMs;
+
+    this.intervalId = window.setTimeout(() => {
       if (this.currentIndex < this.words.length - 1) {
         this.currentIndex++;
         this.notifyStateChange();
+
+        if (this.isPlaying) {
+          this.startInterval();
+        }
       } else {
         this.pause();
         if (this.onComplete) {
           this.onComplete();
         }
       }
-    }, intervalMs);
+    }, totalDelay);
   }
 
   /**
@@ -203,8 +318,12 @@ class ReaderService {
    */
   private stopInterval(): void {
     if (this.intervalId !== null) {
-      clearInterval(this.intervalId);
+      clearTimeout(this.intervalId);
       this.intervalId = null;
+    }
+    if (this.pauseTimeoutId !== null) {
+      clearTimeout(this.pauseTimeoutId);
+      this.pauseTimeoutId = null;
     }
   }
 

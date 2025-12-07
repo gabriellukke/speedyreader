@@ -99,6 +99,10 @@
     "fontMono": "Monospace",
     "fontSize": "Font Size",
     "defaultWpm": "Default Speed (WPM)",
+    "pauseAfterComma": "Pause after comma (,)",
+    "pauseAfterPeriod": "Pause after period (.)",
+    "pauseAfterParagraph": "Pause after paragraph",
+    "pauseDuration": "Duration (ms)",
     "language": "Language",
     "reset": "Reset to Defaults",
     "resetConfirm": "Are you sure you want to reset all settings?"

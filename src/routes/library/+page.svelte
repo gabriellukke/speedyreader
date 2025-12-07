@@ -6,8 +6,11 @@
   import { dateService } from '$lib/services/dateService';
   import type { LibraryItem } from '$lib/types';
   import { t } from '$lib/i18n';
+  import * as Dialog from '$lib/components/ui/dialog';
 
   let items = $state<LibraryItem[]>([]);
+  let showDeleteDialog = $state(false);
+  let itemToDelete = $state<LibraryItem | null>(null);
 
   onMount(() => {
     libraryStore.loadFromLocalStorage();
@@ -23,10 +26,17 @@
     goto('/read');
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm($t('library.deleteConfirm'))) {
-      libraryStore.deleteItem(id);
+  const handleDeleteClick = (item: LibraryItem) => {
+    itemToDelete = item;
+    showDeleteDialog = true;
+  };
+
+  const handleDeleteConfirm = () => {
+    if (itemToDelete) {
+      libraryStore.deleteItem(itemToDelete.id);
+      itemToDelete = null;
     }
+    showDeleteDialog = false;
   };
 
   const formatDate = (timestamp: number) => {
@@ -107,7 +117,7 @@
                 {$t('library.read')}
               </button>
               <button
-                onclick={() => handleDelete(item.id)}
+                onclick={() => handleDeleteClick(item)}
                 class="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
                 aria-label={$t('library.delete')}
               >
@@ -127,3 +137,29 @@
     </div>
   {/if}
 </div>
+
+<!-- Delete Confirmation Dialog -->
+<Dialog.Root bind:open={showDeleteDialog}>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>{$t('library.delete')}</Dialog.Title>
+      <Dialog.Description>{$t('library.deleteConfirm')}</Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <button
+        onclick={() => (showDeleteDialog = false)}
+        class="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground
+          hover:bg-accent transition-colors text-sm font-medium cursor-pointer"
+      >
+        {$t('home.cancel')}
+      </button>
+      <button
+        onclick={handleDeleteConfirm}
+        class="px-4 py-2 rounded-lg bg-destructive text-destructive-foreground
+          hover:bg-destructive/90 transition-colors text-sm font-medium cursor-pointer"
+      >
+        {$t('library.delete')}
+      </button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

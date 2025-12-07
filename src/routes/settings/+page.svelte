@@ -2,8 +2,10 @@
   import { t } from '$lib/i18n';
   import { settingsStore, type Theme, type FontFamily } from '$lib/stores/settingsStore';
   import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+  import * as Dialog from '$lib/components/ui/dialog';
 
   let settings = $state($settingsStore);
+  let showResetDialog = $state(false);
 
   $effect(() => {
     settings = $settingsStore;
@@ -40,10 +42,61 @@
     settingsStore.setDefaultWpm(parseInt(target.value, 10));
   }
 
-  function handleReset() {
-    if (confirm($t('settings.resetConfirm'))) {
-      settingsStore.reset();
-    }
+  function handlePauseCommaEnabled(e: Event) {
+    const target = e.target as HTMLInputElement;
+    settingsStore.setPauseAfterComma({
+      ...settings.pauseAfterComma,
+      enabled: target.checked
+    });
+  }
+
+  function handlePauseCommaDuration(e: Event) {
+    const target = e.target as HTMLInputElement;
+    settingsStore.setPauseAfterComma({
+      ...settings.pauseAfterComma,
+      duration: parseInt(target.value, 10) || 0
+    });
+  }
+
+  function handlePausePeriodEnabled(e: Event) {
+    const target = e.target as HTMLInputElement;
+    settingsStore.setPauseAfterPeriod({
+      ...settings.pauseAfterPeriod,
+      enabled: target.checked
+    });
+  }
+
+  function handlePausePeriodDuration(e: Event) {
+    const target = e.target as HTMLInputElement;
+    settingsStore.setPauseAfterPeriod({
+      ...settings.pauseAfterPeriod,
+      duration: parseInt(target.value, 10) || 0
+    });
+  }
+
+  function handlePauseParagraphEnabled(e: Event) {
+    const target = e.target as HTMLInputElement;
+    settingsStore.setPauseAfterParagraph({
+      ...settings.pauseAfterParagraph,
+      enabled: target.checked
+    });
+  }
+
+  function handlePauseParagraphDuration(e: Event) {
+    const target = e.target as HTMLInputElement;
+    settingsStore.setPauseAfterParagraph({
+      ...settings.pauseAfterParagraph,
+      duration: parseInt(target.value, 10) || 0
+    });
+  }
+
+  function handleResetClick() {
+    showResetDialog = true;
+  }
+
+  function handleResetConfirm() {
+    settingsStore.reset();
+    showResetDialog = false;
   }
 </script>
 
@@ -148,6 +201,99 @@
             <span>1000</span>
           </div>
         </div>
+
+        <div class="space-y-4 pt-2">
+          <h3 class="text-sm font-semibold text-foreground">Pause Settings</h3>
+
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="pauseComma"
+                checked={settings.pauseAfterComma.enabled}
+                onchange={handlePauseCommaEnabled}
+                class="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary cursor-pointer"
+              />
+              <label
+                for="pauseComma"
+                class="flex-1 text-sm font-medium text-foreground cursor-pointer"
+              >
+                {$t('settings.pauseAfterComma')}
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="2000"
+                step="50"
+                value={settings.pauseAfterComma.duration}
+                oninput={handlePauseCommaDuration}
+                disabled={!settings.pauseAfterComma.enabled}
+                class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
+                  text-sm disabled:opacity-50 disabled:cursor-not-allowed
+                  focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <span class="text-xs text-muted-foreground">ms</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="pausePeriod"
+                checked={settings.pauseAfterPeriod.enabled}
+                onchange={handlePausePeriodEnabled}
+                class="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary cursor-pointer"
+              />
+              <label
+                for="pausePeriod"
+                class="flex-1 text-sm font-medium text-foreground cursor-pointer"
+              >
+                {$t('settings.pauseAfterPeriod')}
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="2000"
+                step="50"
+                value={settings.pauseAfterPeriod.duration}
+                oninput={handlePausePeriodDuration}
+                disabled={!settings.pauseAfterPeriod.enabled}
+                class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
+                  text-sm disabled:opacity-50 disabled:cursor-not-allowed
+                  focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <span class="text-xs text-muted-foreground">ms</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="pauseParagraph"
+                checked={settings.pauseAfterParagraph.enabled}
+                onchange={handlePauseParagraphEnabled}
+                class="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary cursor-pointer"
+              />
+              <label
+                for="pauseParagraph"
+                class="flex-1 text-sm font-medium text-foreground cursor-pointer"
+              >
+                {$t('settings.pauseAfterParagraph')}
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="2000"
+                step="50"
+                value={settings.pauseAfterParagraph.duration}
+                oninput={handlePauseParagraphDuration}
+                disabled={!settings.pauseAfterParagraph.enabled}
+                class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
+                  text-sm disabled:opacity-50 disabled:cursor-not-allowed
+                  focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <span class="text-xs text-muted-foreground">ms</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Language Section -->
@@ -165,7 +311,7 @@
       <!-- Reset Section -->
       <section class="pt-4 border-t border-border">
         <button
-          onclick={handleReset}
+          onclick={handleResetClick}
           class="px-4 py-2 rounded-lg border border-destructive text-destructive
             hover:bg-destructive hover:text-white transition-colors text-sm font-medium cursor-pointer"
         >
@@ -175,3 +321,29 @@
     </div>
   </div>
 </main>
+
+<!-- Reset Confirmation Dialog -->
+<Dialog.Root bind:open={showResetDialog}>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>{$t('settings.reset')}</Dialog.Title>
+      <Dialog.Description>{$t('settings.resetConfirm')}</Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <button
+        onclick={() => (showResetDialog = false)}
+        class="px-4 py-2 rounded-lg border border-border bg-card text-card-foreground
+          hover:bg-accent transition-colors text-sm font-medium cursor-pointer"
+      >
+        {$t('home.cancel')}
+      </button>
+      <button
+        onclick={handleResetConfirm}
+        class="px-4 py-2 rounded-lg bg-destructive text-destructive-foreground
+          hover:bg-destructive/90 transition-colors text-sm font-medium cursor-pointer"
+      >
+        {$t('settings.reset')}
+      </button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

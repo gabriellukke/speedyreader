@@ -99,6 +99,10 @@
     "fontMono": "Monoespaçada",
     "fontSize": "Tamanho da Fonte",
     "defaultWpm": "Velocidade Padrão (PPM)",
+    "pauseAfterComma": "Pausa após vírgula (,)",
+    "pauseAfterPeriod": "Pausa após ponto (.)",
+    "pauseAfterParagraph": "Pausa após parágrafo",
+    "pauseDuration": "Duração (ms)",
     "language": "Idioma",
     "reset": "Restaurar Padrões",
     "resetConfirm": "Tem certeza de que deseja restaurar todas as configurações?"

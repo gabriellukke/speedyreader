@@ -43,17 +43,33 @@
   let wpm = $state(300);
   let isPlaying = $state(false);
   let showControls = $state(true);
+  let timerTick = $state(0);
+  let totalEstimatedTime = $state<number>(0);
+  let startTime = $state<number | null>(null);
+  let pausedElapsedTime = $state<number>(0);
+  let isManualJump = $state(false);
 
   let progress = $derived(totalWords > 1 ? (currentIndex / (totalWords - 1)) * 100 : 0);
 
-  let remainingTime = $derived(() => {
-    const remainingWords = totalWords - currentIndex - 1;
-    if (remainingWords <= 0 || wpm <= 0) return '';
+  let remainingTime = $derived.by(() => {
+    if (totalWords === 0 || wpm <= 0) return '';
 
-    const totalSeconds = Math.ceil((remainingWords / wpm) * 60);
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
+    timerTick;
+
+    let remaining: number;
+
+    if (isPlaying && totalEstimatedTime > 0 && startTime !== null) {
+      const elapsed = (Date.now() - startTime) / 1000 + pausedElapsedTime;
+      remaining = Math.max(0, totalEstimatedTime - elapsed);
+    } else {
+      remaining = reader.getTimeRemaining();
+    }
+
+    if (remaining <= 0) return '';
+
+    const h = Math.floor(remaining / 3600);
+    const m = Math.floor((remaining % 3600) / 60);
+    const s = Math.floor(remaining % 60);
 
     const fmt = (n: number, unit: string) => `${n} ${unit}${n !== 1 ? 's' : ''}`;
     const parts = [
@@ -66,16 +82,81 @@
     return `~ ${parts.length ? `${parts.join(' ')} and ${last}` : last}`;
   });
 
+  let lastText = $state('');
+  let lastWpm = $state(0);
+  let lastPauseComma = $state({ enabled: false, duration: 0 });
+  let lastPausePeriod = $state({ enabled: false, duration: 0 });
+  let lastPauseParagraph = $state({ enabled: false, duration: 0 });
+
+  function pauseSettingsEqual(
+    a: { enabled: boolean; duration: number },
+    b: { enabled: boolean; duration: number }
+  ): boolean {
+    return a.enabled === b.enabled && a.duration === b.duration;
+  }
+
   $effect(() => {
-    if (text) {
-      reader.initialize(text, {
-        initialWpm: effectiveWpm,
+    if (!text) {
+      lastText = '';
+      return;
+    }
+
+    const currentText = text;
+    const currentWpm = effectiveWpm;
+    const currentPauseComma = settings.pauseAfterComma;
+    const currentPausePeriod = settings.pauseAfterPeriod;
+    const currentPauseParagraph = settings.pauseAfterParagraph;
+
+    const textChanged = currentText !== lastText;
+    const wpmChanged = currentWpm !== lastWpm;
+    const pauseCommaChanged = !pauseSettingsEqual(currentPauseComma, lastPauseComma);
+    const pausePeriodChanged = !pauseSettingsEqual(currentPausePeriod, lastPausePeriod);
+    const pauseParagraphChanged = !pauseSettingsEqual(currentPauseParagraph, lastPauseParagraph);
+
+    if (
+      textChanged ||
+      wpmChanged ||
+      pauseCommaChanged ||
+      pausePeriodChanged ||
+      pauseParagraphChanged
+    ) {
+      lastText = currentText;
+      lastWpm = currentWpm;
+      lastPauseComma = { ...currentPauseComma };
+      lastPausePeriod = { ...currentPausePeriod };
+      lastPauseParagraph = { ...currentPauseParagraph };
+
+      reader.initialize(currentText, {
+        initialWpm: currentWpm,
+        pauseSettings: {
+          pauseAfterComma: currentPauseComma,
+          pauseAfterPeriod: currentPausePeriod,
+          pauseAfterParagraph: currentPauseParagraph
+        },
         onStateChange: (state: ReaderState) => {
           currentWord = state.words[state.currentIndex] || '';
+          const wasPlaying = isPlaying;
           currentIndex = state.currentIndex;
           totalWords = state.totalWords;
           wpm = state.wpm;
           isPlaying = state.isPlaying;
+
+          if (!wasPlaying && isPlaying) {
+            totalEstimatedTime = reader.getTotalTimeFromIndex(currentIndex);
+            startTime = Date.now();
+            pausedElapsedTime = 0;
+            isManualJump = false;
+          } else if (wasPlaying && !isPlaying) {
+            if (startTime !== null) {
+              pausedElapsedTime += (Date.now() - startTime) / 1000;
+              startTime = null;
+            }
+          } else if (isManualJump && isPlaying) {
+            totalEstimatedTime = reader.getTotalTimeFromIndex(currentIndex);
+            startTime = Date.now();
+            pausedElapsedTime = 0;
+            isManualJump = false;
+          }
         }
       });
     }
@@ -90,14 +171,17 @@
   };
 
   const nextWord = () => {
+    isManualJump = true;
     reader.nextWord();
   };
 
   const prevWord = () => {
+    isManualJump = true;
     reader.previousWord();
   };
 
   const restart = () => {
+    isManualJump = true;
     reader.restart();
   };
 
@@ -111,6 +195,7 @@
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     const targetIndex = Math.floor(percent * totalWords);
+    isManualJump = true;
     reader.jumpToWord(targetIndex);
   };
 
@@ -149,8 +234,16 @@
 
   onMount(() => {
     window.addEventListener('keydown', handleKeydown);
+
+    const timerInterval = setInterval(() => {
+      if (isPlaying && totalEstimatedTime > 0) {
+        timerTick++;
+      }
+    }, 1000);
+
     return () => {
       window.removeEventListener('keydown', handleKeydown);
+      clearInterval(timerInterval);
     };
   });
 
@@ -166,8 +259,14 @@
     onclick={handleProgressClick}
     ontouchstart={handleProgressClick}
     onkeydown={(e) => {
-      if (e.key === 'ArrowLeft') prevWord();
-      if (e.key === 'ArrowRight') nextWord();
+      if (e.key === 'ArrowLeft') {
+        isManualJump = true;
+        prevWord();
+      }
+      if (e.key === 'ArrowRight') {
+        isManualJump = true;
+        nextWord();
+      }
     }}
     role="slider"
     aria-valuenow={currentIndex}
@@ -179,7 +278,7 @@
       class="progress-fill {isPlaying ? 'progress-animated' : ''}"
       style="width: {progress}%;"
     ></div>
-    <span class="progress-time">{remainingTime()}</span>
+    <span class="progress-time">{remainingTime}</span>
   </div>
 
   <!-- Toggle Controls Button - Top Right -->
