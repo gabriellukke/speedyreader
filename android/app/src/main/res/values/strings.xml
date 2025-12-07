@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SpeedyReader</string>
+    <string name="title_activity_main">SpeedyReader</string>
+    <string name="package_name">com.speedyreader.app</string>
+    <string name="custom_url_scheme">com.speedyreader.app</string>
+</resources>

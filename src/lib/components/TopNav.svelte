@@ -6,7 +6,7 @@
   let currentPath = $derived($page.url.pathname);
 </script>
 
-<nav class="sticky top-0 z-50 bg-card border-b border-border">
+<nav class="sticky top-0 z-50 bg-card border-b border-border safe-area-nav">
   <div class="container mx-auto px-3 sm:px-4 max-w-4xl">
     <div class="flex items-center justify-between h-12 sm:h-14">
       <!-- Logo -->
@@ -84,6 +84,12 @@
 </nav>
 
 <style>
+  .safe-area-nav {
+    padding-top: max(env(safe-area-inset-top), 0px);
+    /* Side padding is handled by container's px-3 sm:px-4 class */
+    /* Only add side safe area padding on devices with side notches (very rare) */
+  }
+
   .nav-link {
     display: flex;
     align-items: center;

@@ -44,7 +44,7 @@
   };
 </script>
 
-<div class="min-h-screen container mx-auto px-4 py-8 max-w-2xl">
+<div class="min-h-screen container mx-auto px-4 py-8 max-w-2xl safe-area-content">
   <div class="flex items-center justify-between mb-6">
     <div>
       <h1 class="text-2xl font-bold text-foreground">

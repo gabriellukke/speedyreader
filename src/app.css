@@ -164,7 +164,6 @@
   html {
     min-height: 100%;
     margin: 0;
-    padding: 0;
     background-color: var(--background);
     color: var(--foreground);
     /* Prevent overscroll bounce showing different color */
@@ -196,4 +195,24 @@
 
 :-webkit-full-screen {
   background-color: var(--background);
+}
+
+/*
+ * =============================================================================
+ * Safe Area Support
+ * =============================================================================
+ */
+
+.safe-area-content {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  /* Side padding is handled by container's px-4 class */
+  /* Only add side safe area padding on devices with side notches (very rare) */
+}
+
+/* Remove side padding in landscape mode on mobile */
+@media (orientation: landscape) {
+  .safe-area-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }

@@ -11,7 +11,10 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "cap:sync": "pnpm run build && pnpm exec cap sync",
+    "cap:ios": "pnpm exec cap open ios",
+    "cap:android": "pnpm exec cap open android"
   },
   "devDependencies": {
     "@internationalized/date": "^3.10.0",
@@ -38,6 +41,13 @@
     "vite": "^7.2.2"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/camera": "^7.0.2",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/haptics": "^7.0.2",
+    "@capacitor/ios": "^7.4.4",
+    "@capacitor/status-bar": "^7.0.3",
     "svelte-i18n": "^4.0.1",
     "tesseract.js": "^6.0.1"
   }

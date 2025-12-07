@@ -4,15 +4,24 @@
   import { createReaderService } from '$lib/services/readerService';
   import type { ReaderState } from '$lib/services/readerService';
   import { settingsStore } from '$lib/stores/settingsStore';
+  import { hapticFeedback } from '$lib/utils/capacitorUtils';
+  import { ImpactStyle } from '@capacitor/haptics';
 
   interface Props {
     text: string;
     initialWpm?: number;
     isFullscreen?: boolean;
     onToggleFullscreen?: () => void;
+    autoHideControls?: boolean;
   }
 
-  let { text, initialWpm, isFullscreen = false, onToggleFullscreen }: Props = $props();
+  let {
+    text,
+    initialWpm,
+    isFullscreen = false,
+    onToggleFullscreen,
+    autoHideControls = false
+  }: Props = $props();
 
   const reader = createReaderService();
 
@@ -44,6 +53,12 @@
   let isPlaying = $state(false);
   let showControls = $state(true);
   let timerTick = $state(0);
+
+  $effect(() => {
+    if (autoHideControls) {
+      showControls = false;
+    }
+  });
   let totalEstimatedTime = $state<number>(0);
   let startTime = $state<number | null>(null);
   let pausedElapsedTime = $state<number>(0);
@@ -167,20 +182,24 @@
   };
 
   const togglePlayPause = () => {
+    hapticFeedback(ImpactStyle.Medium);
     reader.togglePlayPause();
   };
 
   const nextWord = () => {
+    hapticFeedback(ImpactStyle.Light);
     isManualJump = true;
     reader.nextWord();
   };
 
   const prevWord = () => {
+    hapticFeedback(ImpactStyle.Light);
     isManualJump = true;
     reader.previousWord();
   };
 
   const restart = () => {
+    hapticFeedback(ImpactStyle.Medium);
     isManualJump = true;
     reader.restart();
   };
@@ -309,7 +328,20 @@
   </button>
 
   <!-- Word Display - True Center -->
-  <div class="word-container">
+  <div
+    class="word-container"
+    onclick={togglePlayPause}
+    ontouchstart={togglePlayPause}
+    onkeydown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePlayPause();
+      }
+    }}
+    role="button"
+    tabindex="0"
+    aria-label={isPlaying ? 'Pause (tap or press Space)' : 'Play (tap or press Space)'}
+  >
     <div class="word-display {fontFamilyClass()}" style="--font-scale: {fontSizeScale};">
       {currentWord}
     </div>
@@ -357,7 +389,7 @@
 
   .progress-bar {
     position: absolute;
-    top: 0;
+    top: max(env(safe-area-inset-top), 0px);
     left: 0;
     right: 0;
     height: 2rem;
@@ -415,7 +447,7 @@
 
   .toggle-btn {
     position: absolute;
-    top: 2.5rem;
+    top: calc(2.5rem + max(env(safe-area-inset-top), 0px));
     right: 1rem;
     z-index: 20;
     padding: 0.5rem;
@@ -438,6 +470,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .word-display {

@@ -11,6 +11,13 @@
   import type { OCRProgress } from '$lib/services/ocrService';
   import { t } from '$lib/i18n';
   import { toastStore } from '$lib/stores/toastStore';
+  import {
+    isNativePlatform,
+    takePhoto,
+    selectPhotoFromGallery,
+    hapticFeedback
+  } from '$lib/utils/capacitorUtils';
+  import { ImpactStyle } from '@capacitor/haptics';
 
   let title = $state('');
   let content = $state('');
@@ -121,16 +128,36 @@
     pendingImageFile = null;
   };
 
-  const openFileSelector = () => {
-    fileInput.click();
+  const openFileSelector = async () => {
+    hapticFeedback(ImpactStyle.Light);
+
+    if (isNativePlatform()) {
+      const file = await selectPhotoFromGallery();
+      if (file) {
+        pendingImageFile = file;
+        showCropper = true;
+      }
+    } else {
+      fileInput.click();
+    }
   };
 
-  const openCamera = () => {
-    cameraInput.click();
+  const openCamera = async () => {
+    hapticFeedback(ImpactStyle.Medium);
+
+    if (isNativePlatform()) {
+      const file = await takePhoto();
+      if (file) {
+        pendingImageFile = file;
+        showCropper = true;
+      }
+    } else {
+      cameraInput.click();
+    }
   };
 </script>
 
-<div class="min-h-screen container mx-auto px-4 py-8 max-w-2xl">
+<div class="min-h-screen container mx-auto px-4 py-8 max-w-2xl safe-area-content">
   <div class="text-center mb-8">
     <h1 class="text-2xl md:text-3xl font-bold text-foreground mb-2">
       {$t('home.title')}
