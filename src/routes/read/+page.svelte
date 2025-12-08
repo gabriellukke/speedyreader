@@ -126,6 +126,7 @@
 <style>
   .reader-page {
     min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--background);
@@ -137,6 +138,8 @@
     display: flex;
     flex-direction: column;
     background-color: var(--background);
+    min-height: 0;
+    overflow: hidden;
   }
 
   /* Fullscreen specific styles */

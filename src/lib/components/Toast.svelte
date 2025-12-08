@@ -25,7 +25,7 @@
     params: { duration?: number; direction?: 'up' | 'down' } = {}
   ): TransitionConfig {
     const { duration = 300, direction = 'down' } = params;
-    
+
     return {
       duration,
       easing: quintOut,
@@ -64,32 +64,6 @@
   }
 </script>
 
-<style>
-  .toast-container {
-    /* Mobile: bottom positioning with safe area */
-    bottom: calc(1rem + max(env(safe-area-inset-bottom), 0px));
-    left: 1rem;
-    right: 1rem;
-    width: auto;
-    max-width: none;
-    top: auto;
-  }
-
-  @media (min-width: 640px) {
-    .toast-container {
-      /* Desktop: top positioning below header */
-      top: calc(
-        max(env(safe-area-inset-top), 0px) + 3.5rem + 1rem
-      );
-      bottom: auto;
-      left: auto;
-      right: calc(1rem + max(env(safe-area-inset-right), 0px));
-      width: auto;
-      max-width: 24rem;
-    }
-  }
-</style>
-
 <div class="toast-container fixed z-50 flex flex-col gap-2 pointer-events-none">
   {#each toasts as toast (toast.id)}
     <div
@@ -119,3 +93,27 @@
     </div>
   {/each}
 </div>
+
+<style>
+  .toast-container {
+    /* Mobile: bottom positioning with safe area */
+    bottom: calc(1rem + max(env(safe-area-inset-bottom), 0px));
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
+    top: auto;
+  }
+
+  @media (min-width: 640px) {
+    .toast-container {
+      /* Desktop: top positioning below header */
+      top: calc(max(env(safe-area-inset-top), 0px) + 3.5rem + 1rem);
+      bottom: auto;
+      left: auto;
+      right: calc(1rem + max(env(safe-area-inset-right), 0px));
+      width: auto;
+      max-width: 24rem;
+    }
+  }
+</style>

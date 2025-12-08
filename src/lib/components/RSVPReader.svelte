@@ -308,10 +308,7 @@
     aria-valuemax={totalWords}
     tabindex="0"
   >
-    <div
-      class="progress-fill {isPlaying && 'progress-animated'}"
-      style="width: {progress}%;"
-    ></div>
+    <div class="progress-fill {isPlaying && 'progress-animated'}" style="width: {progress}%;"></div>
     <span class="progress-time">{remainingTime}</span>
   </div>
 
@@ -394,6 +391,14 @@
     flex: 1;
     overflow: hidden;
     background-color: var(--background);
+  }
+
+  /* Mobile portrait: use full available height when header is visible */
+  @media (max-width: 639px) and (orientation: portrait) {
+    .reader-container:not(.reader-fullscreen):not(.reader-no-header) {
+      height: 100%;
+      min-height: 0;
+    }
   }
 
   .reader-fullscreen {
@@ -539,13 +544,13 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding-bottom: 1.5rem;
+    padding-bottom: calc(1.5rem + max(env(safe-area-inset-bottom), 0px));
     transition: all 300ms;
   }
 
   @media (min-width: 640px) {
     .controls-overlay {
-      padding-bottom: 2rem;
+      padding-bottom: calc(2rem + max(env(safe-area-inset-bottom), 0px));
     }
   }
 
