@@ -40,7 +40,8 @@
     "words": "palavras",
     "deleteConfirm": "Tem certeza de que deseja excluir este item?",
     "read": "Ler",
-    "delete": "Excluir"
+    "delete": "Excluir",
+    "itemDeleted": "Item excluído"
   },
   "reader": {
     "wpm": "PPM",

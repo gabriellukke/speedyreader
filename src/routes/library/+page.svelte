@@ -4,6 +4,7 @@
   import { libraryStore } from '$lib/stores/libraryStore';
   import { readerStore } from '$lib/stores/readerStore';
   import { dateService } from '$lib/services/dateService';
+  import { toastStore } from '$lib/stores/toastStore';
   import type { LibraryItem } from '$lib/types';
   import { t } from '$lib/i18n';
   import * as Dialog from '$lib/components/ui/dialog';
@@ -34,6 +35,7 @@
   const handleDeleteConfirm = () => {
     if (itemToDelete) {
       libraryStore.deleteItem(itemToDelete.id);
+      toastStore.show($t('library.itemDeleted'), 'success');
       itemToDelete = null;
     }
     showDeleteDialog = false;

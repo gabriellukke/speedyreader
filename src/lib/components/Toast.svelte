@@ -1,12 +1,41 @@
 <script lang="ts">
   import { toastStore, type Toast } from '$lib/stores/toastStore';
-  import { fly } from 'svelte/transition';
+  import { quintOut } from 'svelte/easing';
+  import type { TransitionConfig } from 'svelte/transition';
+  import { onMount } from 'svelte';
 
   let toasts = $state<Toast[]>([]);
+  let isMobile = $state(true);
 
   toastStore.subscribe((value) => {
     toasts = value;
   });
+
+  onMount(() => {
+    const checkMobile = () => {
+      isMobile = window.innerWidth < 640;
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  });
+
+  function toastTransition(
+    _node: Element,
+    params: { duration?: number; direction?: 'up' | 'down' } = {}
+  ): TransitionConfig {
+    const { duration = 300, direction = 'down' } = params;
+    
+    return {
+      duration,
+      easing: quintOut,
+      css: (t, u) => {
+        const opacity = t;
+        const y = direction === 'down' ? 20 * u : -20 * u;
+        return `opacity: ${opacity}; transform: translateY(${y}px);`;
+      }
+    };
+  }
 
   function getIcon(type: Toast['type']) {
     switch (type) {
@@ -35,10 +64,36 @@
   }
 </script>
 
-<div class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+<style>
+  .toast-container {
+    /* Mobile: bottom positioning with safe area */
+    bottom: calc(1rem + max(env(safe-area-inset-bottom), 0px));
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
+    top: auto;
+  }
+
+  @media (min-width: 640px) {
+    .toast-container {
+      /* Desktop: top positioning below header */
+      top: calc(
+        max(env(safe-area-inset-top), 0px) + 3.5rem + 1rem
+      );
+      bottom: auto;
+      left: auto;
+      right: calc(1rem + max(env(safe-area-inset-right), 0px));
+      width: auto;
+      max-width: 24rem;
+    }
+  }
+</style>
+
+<div class="toast-container fixed z-50 flex flex-col gap-2 pointer-events-none">
   {#each toasts as toast (toast.id)}
     <div
-      transition:fly={{ y: -20, duration: 300 }}
+      transition:toastTransition={{ duration: 300, direction: isMobile ? 'down' : 'up' }}
       class="pointer-events-auto rounded-lg border shadow-lg p-4 {getColors(toast.type)}"
     >
       <div class="flex items-start gap-3">

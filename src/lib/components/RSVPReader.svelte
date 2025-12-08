@@ -51,6 +51,18 @@
   let totalWords = $state(0);
   let wpm = $state(300);
   let isPlaying = $state(false);
+
+  let containerClasses = $derived(() => {
+    const classes = ['reader-container'];
+    if (isFullscreen) {
+      classes.push('reader-fullscreen', 'reader-no-header');
+    }
+    return classes.join(' ');
+  });
+
+  let playPauseAriaLabel = $derived(
+    isPlaying ? 'Pause (tap or press Space)' : 'Play (tap or press Space)'
+  );
   let showControls = $state(true);
   let timerTick = $state(0);
 
@@ -219,6 +231,7 @@
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
+    // Skip shortcuts when user is typing in input/textarea
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
       return;
     }
@@ -229,10 +242,12 @@
         togglePlayPause();
         break;
       case 'ArrowLeft':
+      case 'KeyA':
         e.preventDefault();
         prevWord();
         break;
       case 'ArrowRight':
+      case 'KeyD':
         e.preventDefault();
         nextWord();
         break;
@@ -271,7 +286,7 @@
   });
 </script>
 
-<div class="reader-container {isFullscreen ? 'reader-fullscreen' : ''}">
+<div class={containerClasses()}>
   <!-- Progress Bar - Top -->
   <div
     class="progress-bar"
@@ -294,7 +309,7 @@
     tabindex="0"
   >
     <div
-      class="progress-fill {isPlaying ? 'progress-animated' : ''}"
+      class="progress-fill {isPlaying && 'progress-animated'}"
       style="width: {progress}%;"
     ></div>
     <span class="progress-time">{remainingTime}</span>
@@ -331,7 +346,6 @@
   <div
     class="word-container"
     onclick={togglePlayPause}
-    ontouchstart={togglePlayPause}
     onkeydown={(e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -340,7 +354,7 @@
     }}
     role="button"
     tabindex="0"
-    aria-label={isPlaying ? 'Pause (tap or press Space)' : 'Play (tap or press Space)'}
+    aria-label={playPauseAriaLabel}
   >
     <div class="word-display {fontFamilyClass()}" style="--font-scale: {fontSizeScale};">
       {currentWord}
@@ -389,7 +403,7 @@
 
   .progress-bar {
     position: absolute;
-    top: max(env(safe-area-inset-top), 0px);
+    top: 0;
     left: 0;
     right: 0;
     height: 2rem;
@@ -401,6 +415,11 @@
     justify-content: center;
     cursor: pointer;
     user-select: none;
+  }
+
+  /* When header is hidden (fullscreen or landscape), add safe area top padding */
+  .reader-no-header .progress-bar {
+    top: max(env(safe-area-inset-top), 0px);
   }
 
   .progress-fill {
@@ -447,7 +466,7 @@
 
   .toggle-btn {
     position: absolute;
-    top: calc(2.5rem + max(env(safe-area-inset-top), 0px));
+    top: 2.5rem;
     right: 1rem;
     z-index: 20;
     padding: 0.5rem;
@@ -457,6 +476,11 @@
     background: transparent;
     border: none;
     color: var(--muted-foreground);
+  }
+
+  /* Adjust toggle button when header is hidden */
+  .reader-no-header .toggle-btn {
+    top: calc(2.5rem + max(env(safe-area-inset-top), 0px));
   }
 
   .toggle-btn:hover {

@@ -40,7 +40,8 @@
     "words": "words",
     "deleteConfirm": "Are you sure you want to delete this item?",
     "read": "Read",
-    "delete": "Delete"
+    "delete": "Delete",
+    "itemDeleted": "Item deleted"
   },
   "reader": {
     "wpm": "WPM",

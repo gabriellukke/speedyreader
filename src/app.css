@@ -209,9 +209,26 @@
   /* Only add side safe area padding on devices with side notches (very rare) */
 }
 
-/* Remove side padding in landscape mode on mobile */
+/* Remove side padding in landscape mode on mobile for content areas */
 @media (orientation: landscape) {
   .safe-area-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Safe area for headers (TopNav and reader page header) */
+.safe-area-header,
+.safe-area-nav {
+  padding-top: max(env(safe-area-inset-top), 0px);
+  padding-left: max(env(safe-area-inset-left), 0px);
+  padding-right: max(env(safe-area-inset-right), 0px);
+}
+
+/* In landscape, headers don't need side padding (handled by container) */
+@media (orientation: landscape) {
+  .safe-area-header,
+  .safe-area-nav {
     padding-left: 0;
     padding-right: 0;
   }

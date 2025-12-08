@@ -66,7 +66,7 @@
 >
   <!-- Header - Hidden in fullscreen or landscape on mobile -->
   {#if !shouldHideHeader}
-    <header class="shrink-0 border-b border-border">
+    <header class="shrink-0 border-b border-border safe-area-header">
       <div class="container mx-auto px-4 max-w-5xl">
         <div class="flex items-center justify-between h-14">
           <a
