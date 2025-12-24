@@ -55,7 +55,7 @@
     appearance: none;
     padding: 0.5rem 1.5rem 0.5rem 2rem;
     border-radius: 0.375rem;
-    font-size: 0.875rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 150ms;
     background-color: transparent;

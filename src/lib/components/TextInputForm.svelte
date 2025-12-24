@@ -22,7 +22,7 @@
       type="text"
       bind:value={title}
       placeholder={$t('home.titlePlaceholder')}
-      class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent text-sm"
+      class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
       {disabled}
     />
   </div>
@@ -36,7 +36,7 @@
       bind:value={content}
       placeholder={$t('home.inputPlaceholder')}
       rows="8"
-      class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent resize-none text-sm"
+      class="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
       {disabled}
     ></textarea>
   </div>

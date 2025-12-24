@@ -45,7 +45,7 @@
         oninput={(e) => handleDuration('pauseAfterComma', parseInt((e.target as HTMLInputElement).value, 10))}
         disabled={!settings.pauseAfterComma.enabled}
         class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
-          text-sm disabled:opacity-50 disabled:cursor-not-allowed
+          disabled:opacity-50 disabled:cursor-not-allowed
           focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <span class="text-xs text-muted-foreground">ms</span>
@@ -71,7 +71,7 @@
         oninput={(e) => handleDuration('pauseAfterPeriod', parseInt((e.target as HTMLInputElement).value, 10))}
         disabled={!settings.pauseAfterPeriod.enabled}
         class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
-          text-sm disabled:opacity-50 disabled:cursor-not-allowed
+          disabled:opacity-50 disabled:cursor-not-allowed
           focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <span class="text-xs text-muted-foreground">ms</span>
@@ -97,7 +97,7 @@
         oninput={(e) => handleDuration('pauseAfterParagraph', parseInt((e.target as HTMLInputElement).value, 10))}
         disabled={!settings.pauseAfterParagraph.enabled}
         class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
-          text-sm disabled:opacity-50 disabled:cursor-not-allowed
+          disabled:opacity-50 disabled:cursor-not-allowed
           focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <span class="text-xs text-muted-foreground">ms</span>
