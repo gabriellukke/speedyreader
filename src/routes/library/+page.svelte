@@ -73,12 +73,7 @@
   {:else}
     <div class="space-y-3">
       {#each items as item (item.id)}
-        <LibraryItemCard
-          {item}
-          onRead={handleRead}
-          onDelete={handleDeleteClick}
-          {formatDate}
-        />
+        <LibraryItemCard {item} onRead={handleRead} onDelete={handleDeleteClick} {formatDate} />
       {/each}
     </div>
   {/if}

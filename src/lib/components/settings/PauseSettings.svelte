@@ -42,7 +42,8 @@
         max="2000"
         step="50"
         value={settings.pauseAfterComma.duration}
-        oninput={(e) => handleDuration('pauseAfterComma', parseInt((e.target as HTMLInputElement).value, 10))}
+        oninput={(e) =>
+          handleDuration('pauseAfterComma', parseInt((e.target as HTMLInputElement).value, 10))}
         disabled={!settings.pauseAfterComma.enabled}
         class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
           disabled:opacity-50 disabled:cursor-not-allowed
@@ -68,7 +69,8 @@
         max="2000"
         step="50"
         value={settings.pauseAfterPeriod.duration}
-        oninput={(e) => handleDuration('pauseAfterPeriod', parseInt((e.target as HTMLInputElement).value, 10))}
+        oninput={(e) =>
+          handleDuration('pauseAfterPeriod', parseInt((e.target as HTMLInputElement).value, 10))}
         disabled={!settings.pauseAfterPeriod.enabled}
         class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
           disabled:opacity-50 disabled:cursor-not-allowed
@@ -82,7 +84,8 @@
         type="checkbox"
         id="pauseParagraph"
         checked={settings.pauseAfterParagraph.enabled}
-        onchange={(e) => handleToggle('pauseAfterParagraph', (e.target as HTMLInputElement).checked)}
+        onchange={(e) =>
+          handleToggle('pauseAfterParagraph', (e.target as HTMLInputElement).checked)}
         class="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary cursor-pointer"
       />
       <label for="pauseParagraph" class="flex-1 text-sm font-medium text-foreground cursor-pointer">
@@ -94,7 +97,8 @@
         max="2000"
         step="50"
         value={settings.pauseAfterParagraph.duration}
-        oninput={(e) => handleDuration('pauseAfterParagraph', parseInt((e.target as HTMLInputElement).value, 10))}
+        oninput={(e) =>
+          handleDuration('pauseAfterParagraph', parseInt((e.target as HTMLInputElement).value, 10))}
         disabled={!settings.pauseAfterParagraph.enabled}
         class="w-20 px-2 py-1 rounded border border-border bg-card text-card-foreground
           disabled:opacity-50 disabled:cursor-not-allowed

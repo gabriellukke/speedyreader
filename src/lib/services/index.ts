@@ -33,3 +33,14 @@ export type { TextValidationResult, TextStats } from './textService';
 // Date Service
 export { dateService } from './dateService';
 export type { DateFormatOptions } from './dateService';
+
+// PDF Service
+export { pdfService } from './pdfService';
+export type {
+  PDFResult,
+  PDFProgress,
+  PDFDocument,
+  PDFMetadata,
+  PDFPage,
+  PDFChapter
+} from './pdfService';

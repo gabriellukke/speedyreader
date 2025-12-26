@@ -1,7 +1,15 @@
 <script lang="ts">
   import * as Dialog from '$lib/components/ui/dialog';
 
-  let { open = $bindable(false), title, description, confirmLabel, cancelLabel, onConfirm, destructive = false } = $props<{
+  let {
+    open = $bindable(false),
+    title,
+    description,
+    confirmLabel,
+    cancelLabel,
+    onConfirm,
+    destructive = false
+  } = $props<{
     open?: boolean;
     title: string;
     description: string;

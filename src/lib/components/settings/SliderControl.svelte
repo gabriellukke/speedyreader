@@ -1,5 +1,13 @@
 <script lang="ts">
-  let { label, value, min, max, step, unit = '', onChange } = $props<{
+  let {
+    label,
+    value,
+    min,
+    max,
+    step,
+    unit = '',
+    onChange
+  } = $props<{
     label: string;
     value: number;
     min: number;

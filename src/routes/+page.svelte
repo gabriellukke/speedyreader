@@ -2,6 +2,7 @@
   import TextInputForm from '$lib/components/TextInputForm.svelte';
   import HomeActions from '$lib/components/home/HomeActions.svelte';
   import OCRUploader from '$lib/components/home/OCRUploader.svelte';
+  import PDFUploader from '$lib/components/home/PDFUploader.svelte';
   import { t } from '$lib/i18n';
 
   let title = $state('');
@@ -15,6 +16,13 @@
     }
     if (!title) {
       title = 'Image Text';
+    }
+  };
+
+  const handlePDFExtracted = (extractedText: string, pdfTitle: string) => {
+    content = extractedText;
+    if (!title) {
+      title = pdfTitle;
     }
   };
 
@@ -39,6 +47,8 @@
       <TextInputForm bind:title bind:content />
       <HomeActions {title} {content} onClearForm={clearForm} />
     </div>
+
+    <PDFUploader onTextExtracted={handlePDFExtracted} />
 
     {#if false}
       <OCRUploader onTextExtracted={handleTextExtracted} />
